@@ -1,0 +1,15 @@
+variable,type,bytes,dims
+/Meteorology/surface_pressure_met,float,32,2
+/Meteorology/windspeed_u_met,float,32,2
+/Meteorology/windspeed_v_met,float,32,2
+/Meteorology/specific_humidity_profile_met,float,32,3
+/Meteorology/temperature_profile_met,float,32,3
+/Meteorology/vector_pressure_levels_met,float,32,3
+/Aerosol/aod_total_met,float,32,2
+/Aerosol/composite_aod_fraction_met,float,32,3
+/Aerosol/composite_aod_gaussian_met,float,32,4
+/Aerosol/composite_aod_profile_met,float,32,4
+/Aerosol/composite_aod_sort_cumulative_met,float,32,3
+/Aerosol/composite_aod_sort_index_met,int,8,3
+/Aerosol/quality_flag_aer_met,int,8,2
+/Aerosol/surface_pressure_aer_met,float,32,2

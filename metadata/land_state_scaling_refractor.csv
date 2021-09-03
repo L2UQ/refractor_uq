@@ -1,0 +1,65 @@
+fp_name,sv_scale,fpsim_position,surr_position,prior_adjust,pow_trans,alt_source,alt_prior,alt_prior_unc,surr_name,scene_group
+CO2 VMR for Press Lvl 1,1.0e6,0,0,No,1,NA,NA,-1,CO2 VMR for Press Lvl 1 (ppm),/Gas/CO2
+CO2 VMR for Press Lvl 2,1.0e6,1,1,No,1,NA,NA,-1,CO2 VMR for Press Lvl 2 (ppm),/Gas/CO2
+CO2 VMR for Press Lvl 3,1.0e6,2,2,No,1,NA,NA,-1,CO2 VMR for Press Lvl 3 (ppm),/Gas/CO2
+CO2 VMR for Press Lvl 4,1.0e6,3,3,No,1,NA,NA,-1,CO2 VMR for Press Lvl 4 (ppm),/Gas/CO2
+CO2 VMR for Press Lvl 5,1.0e6,4,4,No,1,NA,NA,-1,CO2 VMR for Press Lvl 5 (ppm),/Gas/CO2
+CO2 VMR for Press Lvl 6,1.0e6,5,5,No,1,NA,NA,-1,CO2 VMR for Press Lvl 6 (ppm),/Gas/CO2
+CO2 VMR for Press Lvl 7,1.0e6,6,6,No,1,NA,NA,-1,CO2 VMR for Press Lvl 7 (ppm),/Gas/CO2
+CO2 VMR for Press Lvl 8,1.0e6,7,7,No,1,NA,NA,-1,CO2 VMR for Press Lvl 8 (ppm),/Gas/CO2
+CO2 VMR for Press Lvl 9,1.0e6,8,8,No,1,NA,NA,-1,CO2 VMR for Press Lvl 9 (ppm),/Gas/CO2
+CO2 VMR for Press Lvl 10,1.0e6,9,9,No,1,NA,NA,-1,CO2 VMR for Press Lvl 10 (ppm),/Gas/CO2
+CO2 VMR for Press Lvl 11,1.0e6,10,10,No,1,NA,NA,-1,CO2 VMR for Press Lvl 11 (ppm),/Gas/CO2
+CO2 VMR for Press Lvl 12,1.0e6,11,11,No,1,NA,NA,-1,CO2 VMR for Press Lvl 12 (ppm),/Gas/CO2
+CO2 VMR for Press Lvl 13,1.0e6,12,12,No,1,NA,NA,-1,CO2 VMR for Press Lvl 13 (ppm),/Gas/CO2
+CO2 VMR for Press Lvl 14,1.0e6,13,13,No,1,NA,NA,-1,CO2 VMR for Press Lvl 14 (ppm),/Gas/CO2
+CO2 VMR for Press Lvl 15,1.0e6,14,14,No,1,NA,NA,-1,CO2 VMR for Press Lvl 15 (ppm),/Gas/CO2
+CO2 VMR for Press Lvl 16,1.0e6,15,15,No,1,NA,NA,-1,CO2 VMR for Press Lvl 16 (ppm),/Gas/CO2
+CO2 VMR for Press Lvl 17,1.0e6,16,16,No,1,NA,NA,-1,CO2 VMR for Press Lvl 17 (ppm),/Gas/CO2
+CO2 VMR for Press Lvl 18,1.0e6,17,17,No,1,NA,NA,-1,CO2 VMR for Press Lvl 18 (ppm),/Gas/CO2
+CO2 VMR for Press Lvl 19,1.0e6,18,18,No,1,NA,NA,-1,CO2 VMR for Press Lvl 19 (ppm),/Gas/CO2
+CO2 VMR for Press Lvl 20,1.0e6,19,19,No,1,NA,NA,-1,CO2 VMR for Press Lvl 20 (ppm),/Gas/CO2
+H2O Scaling factor,1.0,20,-1,No,1,NA,NA,-1,NA,/Gas/H2O_Scaling_factor
+Surface Pressure (Pascals),1.0e-2,21,20,Yes,1,NA,NA,-1,Surface Pressure (hPa),/Surface_Pressure
+Temperature Offset (Kelvin),1.0,22,-1,No,1,NA,NA,-1,NA,/Temperature/Offset
+Aerosol Shape M1 Logarithmic Gaussian for Coefficient 1,1.0,23,27,Yes,1,MERRA_1_1,NA,-1,NA,/Aerosol/Merra/Gaussian/Log
+Aerosol Shape M1 Logarithmic Gaussian for Coefficient 2,1.0,24,28,No,1,MERRA_1_2,NA,-1,NA,/Aerosol/Merra/Gaussian/Log
+Aerosol Shape M1 Logarithmic Gaussian for Coefficient 3,1.0,25,29,No,0,MERRA_1_3,NA,-1,NA,/Aerosol/Merra/Gaussian/Log
+Aerosol Shape M2 Logarithmic Gaussian for Coefficient 1,1.0,26,30,Yes,1,MERRA_2_1,NA,-1,NA,/Aerosol/Merra/Gaussian/Log
+Aerosol Shape M2 Logarithmic Gaussian for Coefficient 2,1.0,27,31,No,1,MERRA_2_2,NA,-1,NA,/Aerosol/Merra/Gaussian/Log
+Aerosol Shape M2 Logarithmic Gaussian for Coefficient 3,1.0,28,32,No,0,MERRA_2_3,NA,-1,NA,/Aerosol/Merra/Gaussian/Log
+Aerosol Shape Ice Logarithmic Gaussian for Coefficient 1,1.0,29,33,No,1,NA,NA,-1,NA,/Aerosol/Ice/Gaussian/Log
+Aerosol Shape Ice Logarithmic Gaussian for Coefficient 2,1.0,30,34,No,1,NA,NA,-1,NA,/Aerosol/Ice/Gaussian/Log
+Aerosol Shape Ice Logarithmic Gaussian for Coefficient 3,1.0,31,35,No,0,NA,NA,-1,NA,/Aerosol/Ice/Gaussian/Log
+Aerosol Shape Water Logarithmic Gaussian for Coefficient 1,1.0,32,36,No,1,NA,NA,-1,NA,/Aerosol/Water/Gaussian/Log
+Aerosol Shape Water Logarithmic Gaussian for Coefficient 2,1.0,33,37,No,1,NA,NA,-1,NA,/Aerosol/Water/Gaussian/Log
+Aerosol Shape Water Logarithmic Gaussian for Coefficient 3,1.0,34,38,No,0,NA,NA,-1,NA,/Aerosol/Water/Gaussian/Log
+Aerosol Shape ST Logarithmic Gaussian for Coefficient 1,1.0,-1,-1,No,1,NA,NA,-1,NA,/Aerosol/ST/Gaussian/Log
+Aerosol Shape ST Logarithmic Gaussian for Coefficient 2,1.0,-1,-1,No,1,NA,NA,-1,NA,/Aerosol/ST/Gaussian/Log
+Aerosol Shape ST Logarithmic Gaussian for Coefficient 3,1.0,-1,-1,No,0,NA,NA,-1,NA,/Aerosol/ST/Gaussian/Log
+Ground Lambertian A-Band Albedo Parm 1,1.0,35,23,No,1,/BRDFResults/brdf_reflectance_o2,/BRDFResults/brdf_reflectance_apriori_o2,1.0,Ground Lambertian A-Band Albedo Parm 1,/Ground/Albedo
+Ground Lambertian A-Band Albedo Parm 2,1.0,36,24,No,1,/BRDFResults/brdf_reflectance_slope_o2,/BRDFResults/brdf_reflectance_slope_apriori_o2,5.0e-4,Ground Lambertian A-Band Albedo Parm 2,/Ground/Albedo
+Ground Lambertian A-Band Albedo Parm 3,1.0,-1,-1,No,1,/BRDFResults/brdf_reflectance_quadratic_o2,/BRDFResults/brdf_reflectance_quadratic_apriori_o2,5.0e-4,Ground Lambertian A-Band Albedo Parm 3,/Ground/Albedo
+Ground Lambertian WC-Band Albedo Parm 1,1.0,37,25,No,1,/BRDFResults/brdf_reflectance_weak_co2,/BRDFResults/brdf_reflectance_apriori_weak_co2,1.0,Ground Lambertian WC-Band Albedo Parm 1,/Ground/Albedo
+Ground Lambertian WC-Band Albedo Parm 2,1.0,38,26,No,1,/BRDFResults/brdf_reflectance_slope_weak_co2,/BRDFResults/brdf_reflectance_slope_apriori_weak_co2,5.0e-4,Ground Lambertian WC-Band Albedo Parm 2,/Ground/Albedo
+Ground Lambertian WC-Band Albedo Parm 3,1.0,-1,-1,No,1,/BRDFResults/brdf_reflectance_quadratic_weak_co2,/BRDFResults/brdf_reflectance_quadratic_apriori_weak_co2,5.0e-4,Ground Lambertian WC-Band Albedo Parm 3,/Ground/Albedo
+Ground Lambertian SC-Band Albedo Parm 1,1.0,39,21,No,1,/BRDFResults/brdf_reflectance_strong_co2,/BRDFResults/brdf_reflectance_apriori_strong_co2,1.0,Ground Lambertian SC-Band Albedo Parm 1,/Ground/Albedo
+Ground Lambertian SC-Band Albedo Parm 2,1.0,40,22,No,1,/BRDFResults/brdf_reflectance_slope_strong_co2,/BRDFResults/brdf_reflectance_slope_apriori_strong_co2,5.0e-4,Ground Lambertian SC-Band Albedo Parm 2,/Ground/Albedo
+Ground Lambertian SC-Band Albedo Parm 3,1.0,-1,-1,No,1,/BRDFResults/brdf_reflectance_quadratic_strong_co2,/BRDFResults/brdf_reflectance_quadratic_apriori_strong_co2,5.0e-4,Ground Lambertian SC-Band Albedo Parm 3,/Ground/Albedo
+Instrument Dispersion A-Band Offset,1.0,41,-1,Yes,1,NA,NA,-1,NA,/Instrument/Dispersion
+Instrument Dispersion A-Band Scale,1.0,42,-1,Yes,1,NA,NA,-1,NA,NA
+Instrument Dispersion WC-Band Offset,1.0,43,-1,Yes,1,NA,NA,-1,NA,/Instrument/Dispersion
+Instrument Dispersion WC-Band Scale,1.0,44,-1,Yes,1,NA,NA,-1,NA,NA
+Instrument Dispersion SC-Band Offset,1.0,45,-1,Yes,1,NA,NA,-1,NA,/Instrument/Dispersion
+Instrument Dispersion SC-Band Scale,1.0,46,-1,Yes,1,NA,NA,-1,NA,NA
+EOF order 1 scale factor A-Band,1.0,47,-1,No,1,NA,NA,-1,NA,NA
+EOF order 2 scale factor A-Band,1.0,48,-1,No,1,NA,NA,-1,NA,NA
+EOF order 3 scale factor A-Band,1.0,49,-1,No,1,NA,NA,-1,NA,NA
+EOF order 1 scale factor WC-Band,1.0,50,-1,No,1,NA,NA,-1,NA,NA
+EOF order 2 scale factor WC-Band,1.0,51,-1,No,1,NA,NA,-1,NA,NA
+EOF order 3 scale factor WC-Band,1.0,52,-1,No,1,NA,NA,-1,NA,NA
+EOF order 1 scale factor SC-Band,1.0,53,-1,No,1,NA,NA,-1,NA,NA
+EOF order 2 scale factor SC-Band,1.0,54,-1,No,1,NA,NA,-1,NA,NA
+EOF order 3 scale factor SC-Band,1.0,55,-1,No,1,NA,NA,-1,NA,NA
+Fluorescence Surface Coefficient 1,1.0e-18,56,-1,Yes,1,NA,NA,-1,NA,/Fluorescence
+Fluorescence Surface Coefficient 2,1.0,57,-1,Yes,1,NA,NA,-1,NA,/Fluorescence
