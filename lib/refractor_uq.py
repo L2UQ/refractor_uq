@@ -106,7 +106,7 @@ def setup_uq_l1b(uq_l1b_file,l1b_fields,met_fields,ref_idx,ref_l1b,ref_met,sdg_h
     sdout = sdg_hdr*1e6 + sdsq
     sdout.shape = (nsdg,1)
     print(sdout[15:18])
-    fout = h5py.File(uq_l1b_file)
+    fout = h5py.File(uq_l1b_file,'w')
     dfsdg = fout.create_dataset('SoundingGeometry/sounding_id',data=sdout)
    
     flflt = numpy.array([-9.999e6],dtype=numpy.float32)
@@ -143,17 +143,17 @@ def setup_uq_l1b(uq_l1b_file,l1b_fields,met_fields,ref_idx,ref_l1b,ref_met,sdg_h
         dfrd.attrs['missing_value'] = flflt
         dfrd.attrs['_FillValue'] = flflt
         
-    nst = 56
+    nst = 58
     dtst = numpy.zeros((nsdg,nst),dtype=numpy.float32) + flflt
     dfst = fout.create_dataset('StateVector/true_state_vector',data=dtst)
     dfst.attrs['missing_value'] = flflt
     dfst.attrs['_FillValue'] = flflt
 
     # Pull in reference data
-    f = h5py.File(ref_l1b)
+    frf = h5py.File(ref_l1b,'r')
     for index, row in l1b_fields.iterrows():
         if ( (row['dims'] == 3) and (row['sdgspec'] == 'Yes')):
-            l1bdt = f[row['variable']][ref_idx[0],ref_idx[1],:]
+            l1bdt = frf[row['variable']][ref_idx[0],ref_idx[1],:]
             l1bout = numpy.tile(l1bdt,(nsdg,1,1)) 
             print(row['variable'])
             print(l1bout.dtype)
@@ -161,29 +161,29 @@ def setup_uq_l1b(uq_l1b_file,l1b_fields,met_fields,ref_idx,ref_l1b,ref_met,sdg_h
             print(l1bout[0:2,0,:])
             dfl13 = fout.create_dataset(row['variable'],data=l1bout)
         elif ((row['dims'] == 2) and (row['sdgspec'] == 'Yes') ):
-            l1bdt = f[row['variable']][ref_idx[0],ref_idx[1]]
+            l1bdt = frf[row['variable']][ref_idx[0],ref_idx[1]]
             l1bout = numpy.tile(l1bdt,(nsdg,1)) 
             dfl13 = fout.create_dataset(row['variable'],data=l1bout)
         elif ((row['dims'] == 4) and (row['sdgspec'] == 'Yes') ):
-            l1bdt = f[row['variable']][ref_idx[0],ref_idx[1],:,:]
+            l1bdt = frf[row['variable']][ref_idx[0],ref_idx[1],:,:]
             l1bout = numpy.tile(l1bdt,(nsdg,1,1))
             l1bout.shape = (nsdg,1,l1bdt.shape[0],l1bdt.shape[1]) 
             dfl13 = fout.create_dataset(row['variable'],data=l1bout)
         elif ((row['dims'] == 3) and (row['sdgspec'] == 'No') ):
-            l1bdt = f[row['variable']][:,ref_idx[1],:]
+            l1bdt = frf[row['variable']][:,ref_idx[1],:]
             l1bout = numpy.tile(l1bdt,(1,1)) 
             l1bout.shape = (l1bdt.shape[0],1,l1bdt.shape[1])
             if (row['variable'] == '/InstrumentHeader/bad_sample_list'):
                 l1bout[:,:,:] = 0
             dfl13 = fout.create_dataset(row['variable'],data=l1bout)
         elif ((row['dims'] == 4) and (row['sdgspec'] == 'No') ):
-            l1bdt = f[row['variable']][:,ref_idx[1],:,:]
+            l1bdt = frf[row['variable']][:,ref_idx[1],:,:]
             l1bout = numpy.tile(l1bdt,(1,1)) 
             l1bout.shape = (l1bdt.shape[0],1,l1bdt.shape[1],l1bdt.shape[2])
             dfl13 = fout.create_dataset(row['variable'],data=l1bout)
-    f.close()
+    frf.close()
 
-    fmt = h5py.File(ref_met)
+    fmt = h5py.File(ref_met,'r')
     for index, row in met_fields.iterrows():
         if row['dims'] == 3:
             metdt = fmt[row['variable']][ref_idx[0],ref_idx[1],:]
@@ -198,63 +198,6 @@ def setup_uq_l1b(uq_l1b_file,l1b_fields,met_fields,ref_idx,ref_l1b,ref_met,sdg_h
     fout.close()
 
     return
-
-def oco2_mapping_list(sounding_id, map_dirs, search_list):
-    '''Assemble the collection of supporting data files for sounding ID
-       This information is used in other routines  
-    '''
-  
-    yrmndy = int(numpy.floor(sounding_id * 1e-8))
-    sdyr = int(yrmndy / 1e4)
-    rmdr = int(yrmndy % 1e4)
-    sdmn = int(rmdr / 1e2)
-    sddy = int(rmdr % 1e2)
-    crdy = datetime.datetime(sdyr,sdmn,sddy) 
-    stdy = datetime.datetime(sdyr,sdmn,sddy) 
-
-    # Some hour info
-    hrtm = (sounding_id * 1e-8) - yrmndy
-
-    dctout = {}
-    # Get the collection
-    for k in range(len(map_dirs.keys() )):
-        crky = map_dirs.keys()[k]
-        sdfd = -1
-        dctr = 0
-        while ( (sdfd < 0) and (dctr < 2) ):
-            if ( (dctr == 1) and (hrtm < 0.5) ):
-                crdy = stdy + datetime.timedelta(days=-1)
-            elif ( (dctr == 1) and (hrtm >= 0.5) ):
-                crdy = stdy + datetime.timedelta(days=1)
-            else:
-                crdy = stdy + datetime.timedelta(days=0)
-            sspt = -1
-            j = 0
-            while ( (sspt < 0) and (j < len(search_list) ) ):
-                drchk = '%s/%04d/%02d/%02d/%s' % (search_list[j],crdy.year,crdy.month,crdy.day,map_dirs[crky])
-                #print(drchk)
-                if (os.path.isdir(drchk)):
-                    sspt = j
-                    #print('Present')
-                j = j + 1
-            if sspt >= 0:
-            
-                drchk = '%s/%04d/%02d/%02d/%s' % (search_list[sspt],crdy.year,crdy.month,crdy.day,map_dirs[crky])
-                fllst = os.listdir(drchk)
-                q = 0
-                while ( (sdfd < 0) and (q < len(fllst)) ):
-                    if (".h5" in fllst[q]):
-                        flh5 = '%s/%s' % (drchk,fllst[q])
-                        if ( (map_dirs[crky] == 'L1bSc') or (map_dirs[crky] == 'L2Met') \
-                             or (map_dirs[crky] == 'L2ABP') or (map_dirs[crky] == 'L2IDP') ): 
-                            l1bout = oco2_sounding_idx_match(sounding_id,flh5)
-                            if l1bout is not None:
-                                sdfd = l1bout[0]
-                                dctout[crky] = flh5 
-                    q = q + 1
-            dctr = dctr + 1
-
-    return dctout
 
 def retrieval_l2_output(uq_l2_file,sounding_id,ret_state,meas_rad,mod_rad,wvln=None,rdunc=None,prior=None,oflg=None,niter=None):
     '''Generate a UQ Level 2 single sounding output file
@@ -373,7 +316,7 @@ def oco2_mapping_list(sounding_id, map_dirs, search_list):
                     if (".h5" in fllst[q]):
                         flh5 = '%s/%s' % (drchk,fllst[q])
                         if ( (map_dirs[crky] == 'L1bSc') or (map_dirs[crky] == 'L2Met') \
-                             or (map_dirs[crky] == 'L2ABP') or (map_dirs[crky] == 'L2IDP') ): 
+                             or (map_dirs[crky] == 'L2ABP') or (map_dirs[crky] == 'L2IDP') or (map_dirs[crky] == 'L2CPr') ): 
                             l1bout = oco2_sounding_idx_match(sounding_id,flh5)
                             if l1bout is not None:
                                 sdfd = l1bout[0]
