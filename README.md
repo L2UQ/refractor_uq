@@ -25,5 +25,9 @@ Procedure
     - Script: `combine_l1b_oco.py`
     - Output: Radiances saved to `lnd_nadir_refractor_expt_l1b_uqscene.h5`
 6. Run retrievals
-
+    - Create a directory called `output` for retrieval results: `mkdir output`
+    - Script: `refractor_run_retrieval`, requires a command line argument (number) with the sounding index:  
+    `python refractor_run_retrieval.py ##`
+    - Output: `output/l2_####.h5`
+7. Aggregate retrievals 
 
