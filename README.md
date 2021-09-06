@@ -17,9 +17,13 @@ Procedure
     - Output: `lnd_nadir_refractor_expt_l1b_uqscene.h5`
 4. Execute individual forward runs to produce radiances
     - Create a directory called `l1b` for radiances: `mkdir l1b`
-    - Script: `fwdrun_lamont_save_sing.py`, requires a command line argument (number) with the sounding index:  
-    `python fwdrun_lamont_save_sing.py ##`
+    - Script: `fwdrun_oco_save_sing.py`, requires a command line argument (number) with the sounding index:  
+    `python fwdrun_oco_save_sing.py ##`
     - Optional cluster job array: `run_oco_fwd.sh`
     - Output: `l1b/l1b_####.h5`
 5. Combine L1B results back into scene file
+    - Script: `combine_l1b_oco.py`
+    - Output: Radiances saved to `lnd_nadir_refractor_expt_l1b_uqscene.h5`
 6. Run retrievals
+
+
