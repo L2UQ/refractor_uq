@@ -29,5 +29,7 @@ Procedure
     - Script: `refractor_run_retrieval`, requires a command line argument (number) with the sounding index:  
     `python refractor_run_retrieval.py ##`
     - Output: `output/l2_####.h5`
-7. Aggregate retrievals 
+7. Aggregate retrievals
+    - Script: `aggregate_rfrc_oco.py`
+    - Output: `lnd_nadir_201508_refractor_aggregate_retrieval.h5`
 
