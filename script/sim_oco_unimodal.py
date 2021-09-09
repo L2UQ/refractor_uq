@@ -96,7 +96,7 @@ nst = prmn.shape[0]
 print(nst)
 dtall = numpy.zeros((tsmp,nst),dtype=numpy.float)
 dtz = random.multivariate_normal(numpy.zeros((nst,)),crmt,size=tsmp)
-dttmp = numpy.tile(prmn,(tsmp,1)) # + numpy.dot(dtz,sdmt)
+dttmp = numpy.tile(prmn,(tsmp,1)) + numpy.dot(dtz,sdmt)
 dtall[:,:] = dttmp[:,:]
 
 sim_sdg_hdr = int(ref_sounding_id[0:10])
@@ -115,6 +115,9 @@ for j in range(nstrf):
 dtrfc[:,42] = dspcf[0,1]
 dtrfc[:,44] = dspcf[1,1]
 dtrfc[:,46] = dspcf[2,1]
+
+# No EOF effect
+dtrfc[:,47:56] = 0.0
 
 print(prmn)
 outstr = 'lnd_nadir_201508_refractor_state_vectors.h5'
