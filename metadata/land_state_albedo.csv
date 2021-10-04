@@ -1,0 +1,59 @@
+SVName,SVValue
+CO2 linear VMR for Press Lvl 1,0.00038809264026306423
+CO2 linear VMR for Press Lvl 2,0.0003922807560150995
+CO2 linear VMR for Press Lvl 3,0.00039447313724308994
+CO2 linear VMR for Press Lvl 4,0.00039610423377699623
+CO2 linear VMR for Press Lvl 5,0.00039775962831663724
+CO2 linear VMR for Press Lvl 6,0.0003964553243926858
+CO2 linear VMR for Press Lvl 7,0.00039416597037256066
+CO2 linear VMR for Press Lvl 8,0.0003936041556403298
+CO2 linear VMR for Press Lvl 9,0.00039299033112097115
+CO2 linear VMR for Press Lvl 10,0.0003923045541616826
+CO2 linear VMR for Press Lvl 11,0.00039153652563010113
+CO2 linear VMR for Press Lvl 12,0.0003906715867013246
+CO2 linear VMR for Press Lvl 13,0.00038969121917050445
+CO2 linear VMR for Press Lvl 14,0.00038857283583672926
+CO2 linear VMR for Press Lvl 15,0.00038728228249932647
+CO2 linear VMR for Press Lvl 16,0.0003857739334168623
+CO2 linear VMR for Press Lvl 17,0.00038398410432006336
+CO2 linear VMR for Press Lvl 18,0.00038180482579373354
+CO2 linear VMR for Press Lvl 19,0.00037907888900288376
+CO2 linear VMR for Press Lvl 20,0.0003755712186595597
+H2O Scaling factor,1.0
+Surface Pressure (Pascals),95000.00
+Temperature Offset (Kelvin),0.0
+Aerosol kahn_2b gaussian_log Aerosol Ext for Press Lvl 1,-3.912
+Aerosol kahn_2b gaussian_log Aerosol Ext for Press Lvl 2,1.0
+Aerosol kahn_2b gaussian_log Aerosol Ext for Press Lvl 3,0.2
+Aerosol kahn_3b gaussian_log Aerosol Ext for Press Lvl 1,-4.38203
+Aerosol kahn_3b gaussian_log Aerosol Ext for Press Lvl 2,1.0
+Aerosol kahn_3b gaussian_log Aerosol Ext for Press Lvl 3,0.2
+Aerosol water gaussian_log Aerosol Ext for Press Lvl 1,-4.38203
+Aerosol water gaussian_log Aerosol Ext for Press Lvl 2,0.75
+Aerosol water gaussian_log Aerosol Ext for Press Lvl 3,0.1
+Aerosol ice gaussian_log Aerosol Ext for Press Lvl 1,-4.38203
+Aerosol ice gaussian_log Aerosol Ext for Press Lvl 2,0.3
+Aerosol ice gaussian_log Aerosol Ext for Press Lvl 3,0.04
+Ground Lambertian A-Band Albedo Parm 1,0.4
+Ground Lambertian A-Band Albedo Parm 2,0.0
+Ground Lambertian WC-Band Albedo Parm 1,0.4
+Ground Lambertian WC-Band Albedo Parm 2,0.0
+Ground Lambertian SC-Band Albedo Parm 1,0.4
+Ground Lambertian SC-Band Albedo Parm 2,0.0
+Instrument Dispersion A-Band Offset,0.7576315543805464
+Instrument Dispersion A-Band Scale,1.7514296778622482e-05
+Instrument Dispersion WC-Band Offset,1.590547140984628
+Instrument Dispersion WC-Band Scale,3.6436700832183656e-05
+Instrument Dispersion SC-Band Offset,2.043041849918316
+Instrument Dispersion SC-Band Scale,4.6960734593577974e-05
+EOF order 1 scale factor A-Band,0.0
+EOF order 2 scale factor A-Band,0.0
+EOF order 3 scale factor A-Band,0.0
+EOF order 1 scale factor WC-Band,0.0
+EOF order 2 scale factor WC-Band,0.0
+EOF order 3 scale factor WC-Band,0.0
+EOF order 1 scale factor SC-Band,0.0
+EOF order 2 scale factor SC-Band,0.0
+EOF order 3 scale factor SC-Band,0.0
+Fluorescence Surface Coefficient 1,0.0
+Fluorescence Surface Coefficient 2,0.0018
