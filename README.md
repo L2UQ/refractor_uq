@@ -3,6 +3,14 @@ Uncertainty quantification software for use with ReFRACtor
 
 This software adds capability for simulation-based uncertainty quantification (UQ) for remote sensing retrievals carried with [ReFRACtor](https://refractor.github.io/documentation/), the Reusable Framework for Retrieval of Atmospheric Composition.
 
+Preliminaries
+
+* The ReFRACtor `framework` and `oco` repositories should be installed
+* Example OCO-2 Meteorology and Level 1B dataset should be downloaded
+* Additional supporting configuration information is in the `metadata` sub-directory
+* Python scripts are found in the `scripts` directory
+* Supporting library `refractor_uq` is found in the `lib` directory
+
 Procedure
 
 1. Extract prior mean and test forward model
