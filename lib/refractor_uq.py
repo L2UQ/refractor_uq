@@ -320,7 +320,12 @@ def oco2_mapping_list(sounding_id, map_dirs, search_list):
                             l1bout = oco2_sounding_idx_match(sounding_id,flh5)
                             if l1bout is not None:
                                 sdfd = l1bout[0]
-                                dctout[crky] = flh5 
+                                dctout[crky] = flh5
+                        elif ( (map_dirs[crky] == 'L2Dia') or (map_dirs[crky] == 'L2Std') ): 
+                            l2out = oco2_sounding_idx_match_l2(sounding_id,flh5)
+                            if l2out is not None:
+                                sdfd = l2out
+                                dctout[crky] = flh5
                     q = q + 1
             dctr = dctr + 1
 
@@ -360,6 +365,7 @@ def uq_expt_aggregate_l2(expt_scene_file,expt_agg_file,output_dir):
     lmmn = [0.0, 1.0, 1.9]
     lmmx = [1.0, 1.9, 3.0]
 
+    nsdout = 0
     for j in range(nsnd):
         l2nm = '%s/l2_refractor_%d.h5' % (output_dir,sounding_id[j])
         if (os.path.isfile(l2nm)):
@@ -378,7 +384,7 @@ def uq_expt_aggregate_l2(expt_scene_file,expt_agg_file,output_dir):
             itrarr[j] = itr[0]
             oflgarr[j] = oflg[0]
             spcsq = numpy.arange(yobs.shape[0])
-            if j == 0:
+            if nsdout == 0:
                 nlam = yobs.shape[0]
                 yobsout = numpy.zeros((nsnd,nlam),dtype=numpy.float32)
                 yhatout = numpy.zeros((nsnd,nlam),dtype=numpy.float32)
@@ -395,6 +401,7 @@ def uq_expt_aggregate_l2(expt_scene_file,expt_agg_file,output_dir):
                 print(nrmrsd[0:5])
                 chisqarr[j,bnd] = numpy.mean(nrmrsd*nrmrsd)
             # Also spectral parameters
+            nsdout = nsdout + 1
         else:
             str2 = 'No retrieval output for %d ' % (sounding_id[j])
             print(str2)
@@ -448,28 +455,33 @@ def uq_expt_aggregate_l2(expt_scene_file,expt_agg_file,output_dir):
     dfst.attrs['missing_value'] = flflt
     dfst.attrs['_FillValue'] = flflt
 
-    drad = fout.create_dataset('SpectralParameters/measured_radiance',data=yobsout)
-    drad.attrs['missing_value'] = flflt
-    drad.attrs['_FillValue'] = flflt
+    if nsdout > 0:
+        drad = fout.create_dataset('SpectralParameters/measured_radiance',data=yobsout)
+        drad.attrs['missing_value'] = flflt
+        drad.attrs['_FillValue'] = flflt
 
-    drad = fout.create_dataset('SpectralParameters/measured_radiance_unc',data=yuncout)
-    drad.attrs['missing_value'] = flflt
-    drad.attrs['_FillValue'] = flflt
+        drad = fout.create_dataset('SpectralParameters/measured_radiance_unc',data=yuncout)
+        drad.attrs['missing_value'] = flflt
+        drad.attrs['_FillValue'] = flflt
 
-    drad = fout.create_dataset('SpectralParameters/modeled_radiance',data=yhatout)
-    drad.attrs['missing_value'] = flflt
-    drad.attrs['_FillValue'] = flflt
+        drad = fout.create_dataset('SpectralParameters/modeled_radiance',data=yhatout)
+        drad.attrs['missing_value'] = flflt
+        drad.attrs['_FillValue'] = flflt
 
-    drad = fout.create_dataset('SpectralParameters/wavelength',data=lamout)
-    drad.attrs['missing_value'] = flflt
-    drad.attrs['_FillValue'] = flflt
+        drad = fout.create_dataset('SpectralParameters/wavelength',data=lamout)
+        drad.attrs['missing_value'] = flflt
+        drad.attrs['_FillValue'] = flflt
 
     fout.close()
 
     return
 
 def cov2cor(cvmt):
-    d = 1.0 / numpy.sqrt(cvmt.diagonal())
+    dgvc = numpy.diagonal(cvmt)
+    dgsd = numpy.zeros(dgvc.shape,dtype=dgvc.dtype)
+    dgsd[:] = dgvc[:]
+    dgsd[dgsd == 0.0] = 1.0e-12
+    d = 1.0 / numpy.sqrt(dgsd)
     d1 = numpy.diag(d)
     t1 = numpy.dot(d1,cvmt)
     crmt = numpy.dot(t1,d1)
@@ -1547,7 +1559,7 @@ def setup_uq_expt_scene_ref_fixdel(outfile,scene_config,state_info,state_array,p
 
 def setup_uq_expt_scene_ref_bc(outfile,scene_config,state_info,state_array,prior_mean,state_names, \
                                sdg_ids,nreps,l1bfrm, metfrm, ref_idx,ref_l1b,ref_met,err_scl, \
-                               moderr=None,sdvl = 255115, mxcmp=None):
+                               moderr=None, fpidx=None, nrpdscrp=None, sdvl = 255115, mxcmp=None):
     '''Generate a UQ experiment scene file given state vectors and 
        reference sounding information, 
        discrepancy based on bias correction
@@ -1566,6 +1578,8 @@ def setup_uq_expt_scene_ref_bc(outfile,scene_config,state_info,state_array,prior
          ref_met:         Reference Meteorology file
          err_scl:         Array of scale factors for discrepancy (e.g. channel noise)
          moderr:          Logical for sampling model discrepancy
+         fpidx:           Optional footprint index (0-based, footprint number minus 1)
+         nrrpdscrp:       Number of replicates for discrepancy, defaults to nrep
          sdvl:            Random seed
          mxcmp:           Mixture component array
     '''
@@ -1749,8 +1763,17 @@ def setup_uq_expt_scene_ref_bc(outfile,scene_config,state_info,state_array,prior
                         cvout = numpy.zeros((3,3),dtype=numpy.float64)
                         for b0 in range(3):
                             cvout[b0,b0] = cvtmp[b0,0,0]
+                    elif prgrps[q] == '/Ground/Windspeed':
+                        # Version 10 prior cov
+                        cvout = numpy.zeros((1,1),dtype=numpy.float64) + 40.0
                     else:
                         cvout = cvtmp
+                elif prgrps[q] == '/Aerosol/ST/Gaussian/Log':
+                     # From oco_base_config.lua
+                     cvout = numpy.zeros((3,3),dtype=numpy.float64)
+                     cvout[0,0] = 3.24
+                     cvout[1,1] = 1.0e-8
+                     cvout[2,2] = 1.0e-4
                 else:
                     cvout = numpy.zeros((prcmps[q],prcmps[q]),dtype=numpy.float64) + 1.0
                 dfscn = fout.create_dataset(vrnpcv,data=cvout)
@@ -1776,8 +1799,8 @@ def setup_uq_expt_scene_ref_bc(outfile,scene_config,state_info,state_array,prior
                     if prgrps[q] == '/Aerosol/Merra/Gaussian/Log':
                         cvout = numpy.tile(cvtmp,(2,1,1))
                     elif ( (prgrps[q] == '/Ground/Albedo') and (sfctyp == 'ocean') ):
-                        vrocn = '/Ground/Coxmunk_Albedo/covariance' 
-                        cvout = fcv[vrocn][...]
+                        vrocn = '/Ground/Coxmunk_Albedo_Quadratic/covariance' 
+                        cvout = fcv[vrocn][:,0:2,0:2]
                         #cvout[:,1,1] = 1.0 
                     else:
                         cvout = cvtmp
@@ -1808,18 +1831,25 @@ def setup_uq_expt_scene_ref_bc(outfile,scene_config,state_info,state_array,prior
             frmsb = dcpfrm.loc[dcpfrm['component'] == 'discrepancy_end_index']
             fnidx = frmsb['index'].values[0]
             
-            print(dscpfl) 
-            print(mnvrnm) 
-            frd = h5py.File(dscpfl,'r')
-            errmn = frd[mnvrnm][:]
-            errsd = frd[sdvrnm][:]
-            errbs = frd[bsvrnm][stidx:fnidx,:]
-            errev = frd[evvrnm][stidx:fnidx]
-            msgarr = frd[mnvrnm].attrs['missing_value'][:]
-            frd.close()
-            print('Discrepancy parameters opened')
+            if fpidx is None: 
+                frd = h5py.File(dscpfl,'r')
+                errmn = frd[mnvrnm][:]
+                errsd = frd[sdvrnm][:]
+                errbs = frd[bsvrnm][stidx:fnidx,:]
+                errev = frd[evvrnm][stidx:fnidx]
+                msgarr = frd[mnvrnm].attrs['missing_value'][:]
+                frd.close()
+            elif fpidx >= 0:
+                frd = h5py.File(dscpfl,'r')
+                errmn = frd[mnvrnm][fpidx,:]
+                errsd = frd[sdvrnm][fpidx,:]
+                errbs = frd[bsvrnm][fpidx,stidx:fnidx,:]
+                errev = frd[evvrnm][fpidx,stidx:fnidx]
+                msgarr = frd[mnvrnm].attrs['missing_value'][:]
+                frd.close()
 
             errmn[errmn == msgarr[0]] = 0.0
+            
 
             # Tile mean and scale factor
             mnspc = numpy.transpose(numpy.tile(errmn,(nreps,1)))
@@ -1828,7 +1858,9 @@ def setup_uq_expt_scene_ref_bc(outfile,scene_config,state_info,state_array,prior
             ndcmp = fnidx-stidx
             for d1 in range(ndcmp):
                 scrsd = numpy.sqrt(errev[d1])
-                scrcmp = random.normal(scale=scrsd,size=nreps)
+                scrtmp = random.normal(scale=scrsd,size=nrpdscrp)
+                ntile = nreps / nrpdscrp
+                scrcmp = numpy.repeat(scrtmp, ntile)
 
                 bstmp = errbs[d1,:]
                 bstmp[bstmp == msgarr[0]] = 0.0
