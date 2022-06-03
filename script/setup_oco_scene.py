@@ -1,14 +1,8 @@
-#!/opt/local/depot/python/3.6.4/bin/python3
-
-# Initial test experiment with ReFRACtor
-# Based on load_example_config from oco repository
+# Setup scene file for OCO experiment
 
 import os
 import sys
 sys.path.append(os.environ['OCO_CONFIG_DIR'])
-
-from refractor.factory import process_config
-from refractor import framework as rf
 
 import numpy
 import h5py
@@ -44,10 +38,10 @@ metflds.dims = metflds.dims.astype(int)
 print(metflds)
 
 # Simulation setup
-nsim = 5000
+nsim = 100
 sim_sdg_hdr = int(ref_sounding_id[0:10])
 print(sim_sdg_hdr)
-sim_l1b = 'lnd_nadir_refractor_expt_l1b_uqscene.h5' 
+sim_l1b = 'lnd_nadir_refractor_expt_l1b_uqscene_100.h5' 
 
 refractor_uq.setup_uq_l1b(sim_l1b,l1bflds,metflds,sdspt,l1b_file,met_file,sim_sdg_hdr,nsim,save_noise=True)
 
