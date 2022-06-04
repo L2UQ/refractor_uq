@@ -11,7 +11,7 @@ from numpy import ndarray, random, linalg
 def oco2_sounding_idx_match_l2(sounding_id, l2_file):
     '''Match an OCO-2 sounding ID in a specified Level 2 file
        Return the sounding index location for sounding ID
-       This information is used in other routines to extract L2 fields
+       This information is used in other routines to extract L2 fields 
        for this reference sounding
     '''
 
@@ -20,10 +20,10 @@ def oco2_sounding_idx_match_l2(sounding_id, l2_file):
     f.close()
 
     nsdg = sdgs.shape[0]
-
+  
     sdrp = numpy.arange(nsdg)
 
-    sdflt = sdrp.flatten()
+    sdflt = sdrp.flatten()    
     idflt = sdgs.flatten()
 
     sdout = sdflt[idflt == sounding_id]
@@ -33,12 +33,12 @@ def oco2_sounding_idx_match_l2(sounding_id, l2_file):
     else:
         idxout = None
 
-    return idxout
-
+    return idxout   
+ 
 def oco2_sounding_idx_match(sounding_id, l1b_file):
     '''Match an OCO-2 sounding ID in a specified Level 1B file
        Return the sounding and footprint index location for sounding ID
-       This information is used in other routines to extract L1B fields
+       This information is used in other routines to extract L1B fields 
        for this reference sounding
     '''
 
@@ -48,12 +48,12 @@ def oco2_sounding_idx_match(sounding_id, l1b_file):
 
     nsdg = sdgs.shape[0]
     nftp = sdgs.shape[1]
-
+  
     fprp = numpy.tile(numpy.arange(nftp),(nsdg,1))
     sdrp = numpy.transpose(numpy.tile(numpy.arange(nsdg),(nftp,1)))
 
     fpflt = fprp.flatten()
-    sdflt = sdrp.flatten()
+    sdflt = sdrp.flatten()    
     idflt = sdgs.flatten()
 
     fpout = fpflt[idflt == sounding_id]
@@ -64,11 +64,11 @@ def oco2_sounding_idx_match(sounding_id, l1b_file):
     else:
         idxout = None
 
-    return idxout
+    return idxout    
 
 def process_field_list(csvfl):
-    '''Read in a list of HDF5 fields and assemble into a data frame
-       Typically this is a collection of Level 1B fields
+    '''Read in a list of HDF5 fields and assemble into a data frame 
+       Typically this is a collection of Level 1B fields 
     '''
 
     f = open(csvfl)
@@ -81,7 +81,7 @@ def process_field_list(csvfl):
         else:
             rlst.append(rw)
         ctr = ctr + 1
-    df = pandas.DataFrame(rlst,columns = cnms)
+    df = pandas.DataFrame(rlst,columns = cnms)    
 
     return(df)
 
@@ -93,7 +93,7 @@ def setup_uq_l1b(uq_l1b_file,l1b_fields,met_fields,ref_idx,ref_l1b,ref_met,sdg_h
          ref_idx:      Reference sounding index in reference file
          ref_l1b:      Reference Level 1B file
          ref_met:      Reference meteorology file
-         sdg_hdr:      Sounding ID header for output
+         sdg_hdr:      Sounding ID header for output  
          nsdg:         Number of soundings for UQ
          save_noise:   Option to save noise standard deviations
     '''
@@ -102,13 +102,13 @@ def setup_uq_l1b(uq_l1b_file,l1b_fields,met_fields,ref_idx,ref_l1b,ref_met,sdg_h
     # SoundingGeometry/sounding_id
 
     # Setup UQ L1B, soundings, placeholders for radiances
-    sdsq = numpy.arange(1,nsdg+1,dtype=numpy.int64)
+    sdsq = numpy.arange(1,nsdg+1,dtype=numpy.int64) 
     sdout = sdg_hdr*1e6 + sdsq
     sdout.shape = (nsdg,1)
     print(sdout[15:18])
     fout = h5py.File(uq_l1b_file,'w')
     dfsdg = fout.create_dataset('SoundingGeometry/sounding_id',data=sdout)
-
+   
     flflt = numpy.array([-9.999e6],dtype=numpy.float32)
     dtrd = numpy.zeros((nsdg,1,1016),dtype=numpy.float32) + flflt
 
@@ -121,7 +121,7 @@ def setup_uq_l1b(uq_l1b_file,l1b_fields,met_fields,ref_idx,ref_l1b,ref_met,sdg_h
     dfrd = fout.create_dataset('SoundingMeasurements/radiance_strong_co2',data=dtrd)
     dfrd.attrs['missing_value'] = flflt
     dfrd.attrs['_FillValue'] = flflt
-
+ 
     dfrd = fout.create_dataset('SoundingMeasurements/noiseless_radiance_o2',data=dtrd)
     dfrd.attrs['missing_value'] = flflt
     dfrd.attrs['_FillValue'] = flflt
@@ -131,7 +131,7 @@ def setup_uq_l1b(uq_l1b_file,l1b_fields,met_fields,ref_idx,ref_l1b,ref_met,sdg_h
     dfrd = fout.create_dataset('SoundingMeasurements/noiseless_radiance_strong_co2',data=dtrd)
     dfrd.attrs['missing_value'] = flflt
     dfrd.attrs['_FillValue'] = flflt
-
+ 
     if save_noise:
         dfrd = fout.create_dataset('SoundingMeasurements/radiance_errsd_o2',data=dtrd)
         dfrd.attrs['missing_value'] = flflt
@@ -142,7 +142,7 @@ def setup_uq_l1b(uq_l1b_file,l1b_fields,met_fields,ref_idx,ref_l1b,ref_met,sdg_h
         dfrd = fout.create_dataset('SoundingMeasurements/radiance_strong_errsd_co2',data=dtrd)
         dfrd.attrs['missing_value'] = flflt
         dfrd.attrs['_FillValue'] = flflt
-
+        
     nst = 58
     dtst = numpy.zeros((nsdg,nst),dtype=numpy.float32) + flflt
     dfst = fout.create_dataset('StateVector/true_state_vector',data=dtst)
@@ -154,7 +154,7 @@ def setup_uq_l1b(uq_l1b_file,l1b_fields,met_fields,ref_idx,ref_l1b,ref_met,sdg_h
     for index, row in l1b_fields.iterrows():
         if ( (row['dims'] == 3) and (row['sdgspec'] == 'Yes')):
             l1bdt = frf[row['variable']][ref_idx[0],ref_idx[1],:]
-            l1bout = numpy.tile(l1bdt,(nsdg,1,1))
+            l1bout = numpy.tile(l1bdt,(nsdg,1,1)) 
             print(row['variable'])
             print(l1bout.dtype)
             print(l1bout.shape)
@@ -162,23 +162,23 @@ def setup_uq_l1b(uq_l1b_file,l1b_fields,met_fields,ref_idx,ref_l1b,ref_met,sdg_h
             dfl13 = fout.create_dataset(row['variable'],data=l1bout)
         elif ((row['dims'] == 2) and (row['sdgspec'] == 'Yes') ):
             l1bdt = frf[row['variable']][ref_idx[0],ref_idx[1]]
-            l1bout = numpy.tile(l1bdt,(nsdg,1))
+            l1bout = numpy.tile(l1bdt,(nsdg,1)) 
             dfl13 = fout.create_dataset(row['variable'],data=l1bout)
         elif ((row['dims'] == 4) and (row['sdgspec'] == 'Yes') ):
             l1bdt = frf[row['variable']][ref_idx[0],ref_idx[1],:,:]
             l1bout = numpy.tile(l1bdt,(nsdg,1,1))
-            l1bout.shape = (nsdg,1,l1bdt.shape[0],l1bdt.shape[1])
+            l1bout.shape = (nsdg,1,l1bdt.shape[0],l1bdt.shape[1]) 
             dfl13 = fout.create_dataset(row['variable'],data=l1bout)
         elif ((row['dims'] == 3) and (row['sdgspec'] == 'No') ):
             l1bdt = frf[row['variable']][:,ref_idx[1],:]
-            l1bout = numpy.tile(l1bdt,(1,1))
+            l1bout = numpy.tile(l1bdt,(1,1)) 
             l1bout.shape = (l1bdt.shape[0],1,l1bdt.shape[1])
             if (row['variable'] == '/InstrumentHeader/bad_sample_list'):
                 l1bout[:,:,:] = 0
             dfl13 = fout.create_dataset(row['variable'],data=l1bout)
         elif ((row['dims'] == 4) and (row['sdgspec'] == 'No') ):
             l1bdt = frf[row['variable']][:,ref_idx[1],:,:]
-            l1bout = numpy.tile(l1bdt,(1,1))
+            l1bout = numpy.tile(l1bdt,(1,1)) 
             l1bout.shape = (l1bdt.shape[0],1,l1bdt.shape[1],l1bdt.shape[2])
             dfl13 = fout.create_dataset(row['variable'],data=l1bout)
     frf.close()
@@ -187,11 +187,11 @@ def setup_uq_l1b(uq_l1b_file,l1b_fields,met_fields,ref_idx,ref_l1b,ref_met,sdg_h
     for index, row in met_fields.iterrows():
         if row['dims'] == 3:
             metdt = fmt[row['variable']][ref_idx[0],ref_idx[1],:]
-            metout = numpy.tile(metdt,(nsdg,1,1))
+            metout = numpy.tile(metdt,(nsdg,1,1)) 
             dfl13 = fout.create_dataset(row['variable'],data=metout)
         elif row['dims'] == 2:
             metdt = fmt[row['variable']][ref_idx[0],ref_idx[1]]
-            metout = numpy.tile(metdt,(nsdg,1))
+            metout = numpy.tile(metdt,(nsdg,1)) 
             dfl13 = fout.create_dataset(row['variable'],data=metout)
     fmt.close()
 
@@ -201,8 +201,8 @@ def setup_uq_l1b(uq_l1b_file,l1b_fields,met_fields,ref_idx,ref_l1b,ref_met,sdg_h
 
 def retrieval_l2_output(uq_l2_file,sounding_id,ret_state,meas_rad,mod_rad,wvln=None,rdunc=None,prior=None,oflg=None,niter=None):
     '''Generate a UQ Level 2 single sounding output file
-       This is a bare bones refractor result that can be combined with other
-       standard OCO-2 diagnostics later
+       This is a bare bones refractor result that can be combined with other 
+       standard OCO-2 diagnostics later 
          uq_l2_file:   Name of output L2 file
          sounding_id:  Sounding ID
          ret_state:    Retrieved state vector
@@ -221,10 +221,10 @@ def retrieval_l2_output(uq_l2_file,sounding_id,ret_state,meas_rad,mod_rad,wvln=N
 
     sdgarr = numpy.array(sounding_id,dtype=numpy.int64)
     dfsdg = fout.create_dataset('RetrievalHeader/sounding_id',data=sdgarr)
-
+   
     flflt = numpy.array([-9.999e6],dtype=numpy.float32)
     flshr = numpy.array([-99],dtype=numpy.int16)
-
+ 
     #dtst = numpy.zeros((nsdg,nst),dtype=numpy.float32) + flflt
     dfst = fout.create_dataset('RetrievalResults/retrieved_state_vector',data=ret_state)
     dfst.attrs['missing_value'] = flflt
@@ -271,24 +271,25 @@ def retrieval_l2_output(uq_l2_file,sounding_id,ret_state,meas_rad,mod_rad,wvln=N
 
 def oco2_mapping_list(sounding_id, map_dirs, search_list):
     '''Assemble the collection of supporting data files for sounding ID
-       This information is used in other routines
+       This information is used in other routines  
     '''
-
+  
     yrmndy = int(numpy.floor(sounding_id * 1e-8))
     sdyr = int(yrmndy / 1e4)
     rmdr = int(yrmndy % 1e4)
     sdmn = int(rmdr / 1e2)
     sddy = int(rmdr % 1e2)
-    crdy = datetime.datetime(sdyr,sdmn,sddy)
-    stdy = datetime.datetime(sdyr,sdmn,sddy)
+    crdy = datetime.datetime(sdyr,sdmn,sddy) 
+    stdy = datetime.datetime(sdyr,sdmn,sddy) 
 
     # Some hour info
     hrtm = (sounding_id * 1e-8) - yrmndy
 
     dctout = {}
     # Get the collection
+    kylst = list(map_dirs.keys())
     for k in range(len(map_dirs.keys() )):
-        crky = map_dirs.keys()[k]
+        crky = kylst[k]
         sdfd = -1
         dctr = 0
         while ( (sdfd < 0) and (dctr < 2) ):
@@ -308,7 +309,7 @@ def oco2_mapping_list(sounding_id, map_dirs, search_list):
                     #print('Present')
                 j = j + 1
             if sspt >= 0:
-
+            
                 drchk = '%s/%04d/%02d/%02d/%s' % (search_list[sspt],crdy.year,crdy.month,crdy.day,map_dirs[crky])
                 fllst = os.listdir(drchk)
                 q = 0
@@ -316,12 +317,12 @@ def oco2_mapping_list(sounding_id, map_dirs, search_list):
                     if (".h5" in fllst[q]):
                         flh5 = '%s/%s' % (drchk,fllst[q])
                         if ( (map_dirs[crky] == 'L1bSc') or (map_dirs[crky] == 'L2Met') \
-                             or (map_dirs[crky] == 'L2ABP') or (map_dirs[crky] == 'L2IDP') or (map_dirs[crky] == 'L2CPr') ):
+                             or (map_dirs[crky] == 'L2ABP') or (map_dirs[crky] == 'L2IDP') or (map_dirs[crky] == 'L2CPr') ): 
                             l1bout = oco2_sounding_idx_match(sounding_id,flh5)
                             if l1bout is not None:
                                 sdfd = l1bout[0]
                                 dctout[crky] = flh5
-                        elif ( (map_dirs[crky] == 'L2Dia') or (map_dirs[crky] == 'L2Std') ):
+                        elif ( (map_dirs[crky] == 'L2Dia') or (map_dirs[crky] == 'L2Std') ): 
                             l2out = oco2_sounding_idx_match_l2(sounding_id,flh5)
                             if l2out is not None:
                                 sdfd = l2out
@@ -332,8 +333,8 @@ def oco2_mapping_list(sounding_id, map_dirs, search_list):
     return dctout
 
 def uq_expt_aggregate_l2(expt_scene_file,expt_agg_file,output_dir):
-    '''Generate a OCO-2/3 UQ experiment aggregate output file
-         expt_scene_file:     Name of experiment scene file
+    '''Generate a OCO-2/3 UQ experiment aggregate output file 
+         expt_scene_file:     Name of experiment scene file 
          expt_agg_file:       Name of experiment aggregate output file (OUTPUT)
          output_dir:          Location of individual retrieval output files
     '''
@@ -349,7 +350,7 @@ def uq_expt_aggregate_l2(expt_scene_file,expt_agg_file,output_dir):
     flflt = numpy.array([-9.999e6],dtype=numpy.float32)
     flshrt = numpy.array([-99],dtype=numpy.int16)
 
-    rtxco2 = numpy.zeros((nsnd,),dtype=numpy.float32) + flflt[0]
+    rtxco2 = numpy.zeros((nsnd,),dtype=numpy.float32) + flflt[0] 
     xhat = numpy.zeros((nsnd,nstate),dtype=numpy.float32) + flflt[0]
     chisqarr = numpy.zeros((nsnd,3),dtype=numpy.float32) + flflt[0]
     itrarr = numpy.zeros((nsnd,),dtype=numpy.int16) + flshrt[0]
@@ -391,7 +392,7 @@ def uq_expt_aggregate_l2(expt_scene_file,expt_agg_file,output_dir):
                 yuncout = numpy.zeros((nsnd,nlam),dtype=numpy.float32)
                 lamout = numpy.zeros((nsnd,nlam),dtype=numpy.float32)
             yobsout[j,:] = yobs[:]
-            yhatout[j,:] = yhat[:]
+            yhatout[j,:] = yhat[:] 
             yuncout[j,:] = yunc[:]
             lamout[j,:] = lam[:]
             for bnd in range(3):
@@ -415,7 +416,7 @@ def uq_expt_aggregate_l2(expt_scene_file,expt_agg_file,output_dir):
 
     #sdgarr = numpy.array(sounding_id,dtype=numpy.int64)
     dfsdg = fout.create_dataset('RetrievalHeader/sounding_id',data=sounding_id)
-
+   
     # Retrieval Results
     dfst = fout.create_dataset('RetrievalResults/retrieved_state_vector',data=xhat)
     dfst.attrs['missing_value'] = flflt
@@ -500,8 +501,8 @@ def unpackcov(pckmat,nelm):
     return xout
 
 def setup_uq_expt_scene(scene_config,state_info_file,moderr=None,sdvl = 255115):
-    '''Generate a UQ experiment scene file
-         scene_config:    Name of config CSV file
+    '''Generate a UQ experiment scene file 
+         scene_config:    Name of config CSV file 
          state_info_file: Name of state vector config CSV file
     '''
 
@@ -592,7 +593,7 @@ def setup_uq_expt_scene(scene_config,state_info_file,moderr=None,sdvl = 255115):
             dfscn = fout.create_dataset(nmout,data=tmpvl)
         dt = h5py.special_dtype(vlen=str)
         da2 = fout.create_dataset('/Metadata/AcquisitionMode',(1,),dtype=dt)
-        da2[...] = amdstr
+        da2[...] = amdstr 
 
         # State Vector
         f = open(svcfile)
@@ -653,11 +654,11 @@ def setup_uq_expt_scene(scene_config,state_info_file,moderr=None,sdvl = 255115):
         svlfl = svcdf[svcdf['component'] == 'state_vector_names']['file_name'].values[0]
         svlvr = svcdf[svcdf['component'] == 'state_vector_names']['variable_name'].values[0]
         frd = h5py.File(svlfl,'r')
-        tmpvr = frd[svlvr][smsqfp]
+        tmpvr = frd[svlvr][smsqfp] 
         frd.close()
         for p in range(vcout.shape[0]):
-            if ('BRDF' in tmpvr[p]):
-                tmpvr[p] = sbsq['surr_name'].values[p]
+            if ('BRDF' in tmpvr[p]): 
+                tmpvr[p] = sbsq['surr_name'].values[p] 
         dfscn = fout.create_dataset('/StateVector/state_vector_names',data=tmpvr)
 
         # Prior
@@ -698,7 +699,7 @@ def setup_uq_expt_scene(scene_config,state_info_file,moderr=None,sdvl = 255115):
         cvvl = numpy.array(tmpcv)
         frd.close()
 
-        vcapr = tmpvl[smsqfp]
+        vcapr = tmpvl[smsqfp] 
         aprfl = numpy.zeros((vcapr.shape[0],tsmp),dtype=vcapr.dtype)
         cvmt = unpackcov(cvvl,tmpvl.shape[0])
         cvsb = numpy.zeros((vcapr.shape[0],vcapr.shape[0]),dtype=numpy.float32)
@@ -752,10 +753,10 @@ def setup_uq_expt_scene(scene_config,state_info_file,moderr=None,sdvl = 255115):
                 #    print(widx)
                 #    vcout[widx,:] = aprtmp[:]
                 #    svcvr = fout['/StateVector/sampled_state_vectors']
-                #    svcvr[...] = vcout
+                #    svcvr[...] = vcout 
             else:
                 dm0 = prngrp[q]
-                dm1 = prcmps[q] / prngrp[q]
+                dm1 = prcmps[q] / prngrp[q] 
                 aprtmp = numpy.zeros((dm0,dm1,tsmp),dtype=aprfl.dtype)
                 ct2 = 0
                 for b0 in range(dm0):
@@ -787,9 +788,9 @@ def setup_uq_expt_scene(scene_config,state_info_file,moderr=None,sdvl = 255115):
                 #    for ta0 in range(tsmp):
                 #        vcout[wsq,ta0] = albfx[:]
                 #    svcvr = fout['/StateVector/sampled_state_vectors']
-                #    svcvr[...] = vcout
-
-        # Discrepancy
+                #    svcvr[...] = vcout 
+               
+        # Discrepancy 
         ndcmp = 30
         nchnl = 3048
         dscrp = numpy.zeros((nchnl,tsmp),dtype=numpy.float32)
@@ -797,7 +798,7 @@ def setup_uq_expt_scene(scene_config,state_info_file,moderr=None,sdvl = 255115):
             scrtot = numpy.zeros((nchnl,tsmp),dtype=numpy.float32)
             dcpfrm = pandas.read_csv(mdcfile, \
                                      dtype = {'component':str, 'file_name':str, \
-                                              'variable_name':str, 'index':int})
+                                              'variable_name':str, 'index':int}) 
             dscpfl = dcpfrm['file_name'].values[0]
             frmsb = dcpfrm.loc[dcpfrm['component'] == 'discrepancy_mean']
             mnvrnm = frmsb['variable_name'].values[0]
@@ -807,9 +808,9 @@ def setup_uq_expt_scene(scene_config,state_info_file,moderr=None,sdvl = 255115):
             bsvrnm = frmsb['variable_name'].values[0]
             frmsb = dcpfrm.loc[dcpfrm['component'] == 'discrepancy_basis_var']
             evvrnm = frmsb['variable_name'].values[0]
-
-            print(dscpfl)
-            print(mnvrnm)
+            
+            print(dscpfl) 
+            print(mnvrnm) 
             frd = h5py.File(dscpfl,'r')
             errmn = frd[mnvrnm][:]
             errsd = frd[sdvrnm][:]
@@ -851,8 +852,8 @@ def setup_uq_expt_scene(scene_config,state_info_file,moderr=None,sdvl = 255115):
     return
 
 def uq_expt_aggregate_l1b(expt_scene_file,output_dir):
-    '''Propagate individual forward model radiances to a UQ experiment result output file
-         expt_scene_file:     Name of experiment scene file
+    '''Propagate individual forward model radiances to a UQ experiment result output file 
+         expt_scene_file:     Name of experiment scene file 
          output_dir:          Location of individual retrieval output files
     '''
 
@@ -955,7 +956,7 @@ def quantile_msgdat_discrete(vcdat, probs, msgval=-99):
     return qsout
 
 def inverse_cdf_from_obs_fill_msg(vcdat, obsqs, probs, msgval=-9999.):
-    # Compute transform from observed quantiles to probabilities via inverse CDF
+    # Compute transform from observed quantiles to probabilities via inverse CDF 
 
     nprb = probs.shape[0]
     ndat = vcdat.shape[0]
@@ -992,7 +993,7 @@ def inverse_cdf_from_obs_fill_msg(vcdat, obsqs, probs, msgval=-9999.):
         pspt = ptst[smlw] + prbdif * random.uniform(size=nvld)
         #print(pspt[505:510])
 
-        zout[vsq] = pspt
+        zout[vsq] = pspt 
 
         # Missing
         if nmsg > 0:
@@ -1009,11 +1010,11 @@ def clean_byte_list(btlst):
 def setup_uq_expt_scene_ref(outfile,scene_config,state_info,state_array,prior_mean,state_names, \
                             sdg_ids,nreps,l1bfrm, metfrm, ref_idx,ref_l1b,ref_met, \
                             moderr=None,sdvl = 255115, mxcmp=None):
-    '''Generate a UQ experiment scene file given state vectors and
+    '''Generate a UQ experiment scene file given state vectors and 
        reference sounding information
          outfile:         Name of output scene file
-         scene_config:    Name of config CSV file
-         state_info:      State scaling data frame
+         scene_config:    Name of config CSV file 
+         state_info:      State scaling data frame 
          state_array:     Matrix of state vectors
          prior_mean:      Prior mean vector
          state_names:     State vector names
@@ -1057,7 +1058,7 @@ def setup_uq_expt_scene_ref(outfile,scene_config,state_info,state_array,prior_me
         amdstr = numpy.empty((1,),"|O")
         amdstr[0] = aqmdout
 
-        # Met/L1b parameters from data frames
+        # Met/L1b parameters from data frames 
         flflt = numpy.array([-9.999e6],dtype=numpy.float32)
 
         fout = h5py.File(outfile,'w')
@@ -1066,7 +1067,7 @@ def setup_uq_expt_scene_ref(outfile,scene_config,state_info,state_array,prior_me
         for index, row in l1bfrm.iterrows():
             if ( (row['dims'] == 3) and (row['sdgspec'] == 'Yes')):
                 l1bdt = f[row['variable']][ref_idx[0],ref_idx[1],0]
-                l1bout = numpy.tile(l1bdt,(1,))
+                l1bout = numpy.tile(l1bdt,(1,)) 
                 dfl13 = fout.create_dataset(row['variable'],data=l1bout)
             elif ((row['dims'] == 2) and (row['sdgspec'] == 'Yes') ):
                 l1bdt = f[row['variable']][ref_idx[0],ref_idx[1]]
@@ -1112,7 +1113,7 @@ def setup_uq_expt_scene_ref(outfile,scene_config,state_info,state_array,prior_me
                 dfl13 = fout.create_dataset(metnm,data=metdt)
             elif row['dims'] == 2:
                 metdt = fmt[row['variable']][ref_idx[0],ref_idx[1]]
-                metout = numpy.tile(metdt,(1,))
+                metout = numpy.tile(metdt,(1,)) 
                 dfl13 = fout.create_dataset(metnm,data=metout)
             elif row['dims'] == 4:
                 metdt = fmt[row['variable']][ref_idx[0],ref_idx[1],:,:]
@@ -1127,7 +1128,7 @@ def setup_uq_expt_scene_ref(outfile,scene_config,state_info,state_array,prior_me
 
         dt = h5py.special_dtype(vlen=str)
         da2 = fout.create_dataset('/Metadata/AcquisitionMode',(1,),dtype=dt)
-        da2[...] = amdstr
+        da2[...] = amdstr 
         dfl4 = fout.create_dataset('/SoundingGeometry/sounding_id',data=sdg_ids)
 
         # State Vector
@@ -1146,9 +1147,13 @@ def setup_uq_expt_scene_ref(outfile,scene_config,state_info,state_array,prior_me
         dfscn = fout.create_dataset('/StateVector/sampled_state_vectors',data=vcout)
 
         tmpvr = state_names[smsqfp]
+        grndnm = '/Ground/Albedo' 
         for p in range(nstscn):
             if ('BRDF' in tmpvr[p]):
-                tmpvr[p] = sbsq['surr_name'].values[p]
+                if (pandas.notnull(sbsq['alt_source'].values[p])):
+                    tmpvr[p] = sbsq['surr_name'].values[p]
+                else:
+                    grndnm = '/Ground/Brdf' 
         dfscn = fout.create_dataset('/StateVector/state_vector_names',data=tmpvr)
 
         if (mxcmp is not None):
@@ -1159,7 +1164,7 @@ def setup_uq_expt_scene_ref(outfile,scene_config,state_info,state_array,prior_me
         if sfctyp == 'land':
             prgrps = ['/Gas/CO2','/Gas/H2O_Scaling_factor','/Surface_Pressure','/Temperature/Offset', \
                       '/Aerosol/Merra/Gaussian/Log','/Aerosol/Ice/Gaussian/Log','/Aerosol/Water/Gaussian/Log', \
-                      '/Aerosol/ST/Gaussian/Log','/Ground/Albedo','/Instrument/Dispersion','/Fluorescence']
+                      '/Aerosol/ST/Gaussian/Log',grndnm,'/Instrument/Dispersion','/Fluorescence']
             prcmps =   [20, 1, 1, 1, 6, 3, 3, 3, 6, 3, 2]
             prngrp = [ 1, 1, 1, 1, 2, 1, 1, 1, 3, 1, 1]
         elif sfctyp == 'ocean':
@@ -1215,12 +1220,22 @@ def setup_uq_expt_scene_ref(outfile,scene_config,state_info,state_array,prior_me
                 dfscn = fout.create_dataset(vrnpcv,data=cvout)
             else:
                 dm0 = prngrp[q]
-                dm1 = prcmps[q] / prngrp[q]
-                aprtmp = numpy.zeros((dm0,dm1,nreps),dtype=aprfl.dtype)
+                dm1 = prcmps[q] / prngrp[q] 
+                if prgrps[q] == '/Ground/Brdf':
+                    prgrd = fcv['/Ground/Brdf/a_priori'][:,:] 
+                    aprtmp = numpy.zeros((dm0,prgrd.shape[1],nreps),dtype=aprfl.dtype)
+                    nfx = prgrd.shape[1] - dm1
+                    # Fixed coefficients are first, variable weights at end
+                    for b0 in range(dm0):
+                        for gd2 in range(nfx):
+                            aprtmp[b0,gd2,:] = prgrd[b0,gd2]
+                else:
+                    aprtmp = numpy.zeros((dm0,dm1,nreps),dtype=aprfl.dtype)
+                    nfx = 0
                 ct2 = 0
                 for b0 in range(dm0):
                     for b1 in range(dm1):
-                        aprtmp[b0,b1,:] = aprfl[gsb[ct2],:]
+                        aprtmp[b0,b1+nfx,:] = aprfl[gsb[ct2],:]
                         ct2 = ct2 + 1
                 vrnmpr = '%s/a_priori' % (prgrps[q])
                 dfscn = fout.create_dataset(vrnmpr,data=aprtmp)
@@ -1235,16 +1250,16 @@ def setup_uq_expt_scene_ref(outfile,scene_config,state_info,state_array,prior_me
                     if prgrps[q] == '/Aerosol/Merra/Gaussian/Log':
                         cvout = numpy.tile(cvtmp,(2,1,1))
                     elif ( (prgrps[q] == '/Ground/Albedo') and (sfctyp == 'ocean') ):
-                        vrocn = '/Ground/Coxmunk_Albedo/covariance'
+                        vrocn = '/Ground/Coxmunk_Albedo/covariance' 
                         cvout = fcv[vrocn][...]
                     else:
                         cvout = cvtmp
                 else:
                     cvout = numpy.zeros((prcmps[q],prcmps[q]),dtype=numpy.float64) + 1.0
                 dfscn = fout.create_dataset(vrnpcv,data=cvout)
-        fcv.close()
+        fcv.close()               
 
-        # Discrepancy
+        # Discrepancy 
         ndcmp = 30
         nchnl = 3048
         dscrp = numpy.zeros((nchnl,nreps),dtype=numpy.float32)
@@ -1252,7 +1267,7 @@ def setup_uq_expt_scene_ref(outfile,scene_config,state_info,state_array,prior_me
             scrtot = numpy.zeros((nchnl,nreps),dtype=numpy.float32)
             dcpfrm = pandas.read_csv(mdcfile, \
                                      dtype = {'component':str, 'file_name':str, \
-                                              'variable_name':str, 'index':int})
+                                              'variable_name':str, 'index':int}) 
             dscpfl = dcpfrm['file_name'].values[0]
             frmsb = dcpfrm.loc[dcpfrm['component'] == 'discrepancy_mean']
             mnvrnm = frmsb['variable_name'].values[0]
@@ -1262,9 +1277,9 @@ def setup_uq_expt_scene_ref(outfile,scene_config,state_info,state_array,prior_me
             bsvrnm = frmsb['variable_name'].values[0]
             frmsb = dcpfrm.loc[dcpfrm['component'] == 'discrepancy_basis_var']
             evvrnm = frmsb['variable_name'].values[0]
-
-            print(dscpfl)
-            print(mnvrnm)
+            
+            print(dscpfl) 
+            print(mnvrnm) 
             frd = h5py.File(dscpfl,'r')
             errmn = frd[mnvrnm][:]
             errsd = frd[sdvrnm][:]
@@ -1306,12 +1321,12 @@ def setup_uq_expt_scene_ref(outfile,scene_config,state_info,state_array,prior_me
 def setup_uq_expt_scene_ref_fixdel(outfile,scene_config,state_info,state_array,prior_mean,state_names, \
                                    sdg_ids,nreps,l1bfrm, metfrm, ref_idx,ref_l1b,ref_met, \
                                    modscl=1.0, sdvl = 255115, mxcmp=None):
-    '''Generate a UQ experiment scene file given state vectors and
+    '''Generate a UQ experiment scene file given state vectors and 
        reference sounding information
        This version injects fixed model discrepancy
          outfile:         Name of output scene file
-         scene_config:    Name of config CSV file
-         state_info:      State scaling data frame
+         scene_config:    Name of config CSV file 
+         state_info:      State scaling data frame 
          state_array:     Matrix of state vectors
          prior_mean:      Prior mean vector
          state_names:     State vector names
@@ -1322,7 +1337,7 @@ def setup_uq_expt_scene_ref_fixdel(outfile,scene_config,state_info,state_array,p
          ref_idx:         Sounding index in L1B/Met files
          ref_l1b:         Reference L1B file
          ref_met:         Reference Meteorology file
-         modscl:          Scale factor for discrepancy mean
+         modscl:          Scale factor for discrepancy mean 
          sdvl:            Random seed
          mxcmp:           Mixture component array
     '''
@@ -1359,7 +1374,7 @@ def setup_uq_expt_scene_ref_fixdel(outfile,scene_config,state_info,state_array,p
         amdstr = numpy.empty((1,),"|O")
         amdstr[0] = aqmdout
 
-        # Met/L1b parameters from data frames
+        # Met/L1b parameters from data frames 
         flflt = numpy.array([-9.999e6],dtype=numpy.float32)
 
         fout = h5py.File(outfile,'w')
@@ -1368,7 +1383,7 @@ def setup_uq_expt_scene_ref_fixdel(outfile,scene_config,state_info,state_array,p
         for index, row in l1bfrm.iterrows():
             if ( (row['dims'] == 3) and (row['sdgspec'] == 'Yes')):
                 l1bdt = f[row['variable']][ref_idx[0],ref_idx[1],0]
-                l1bout = numpy.tile(l1bdt,(1,))
+                l1bout = numpy.tile(l1bdt,(1,)) 
                 dfl13 = fout.create_dataset(row['variable'],data=l1bout)
             elif ((row['dims'] == 2) and (row['sdgspec'] == 'Yes') ):
                 l1bdt = f[row['variable']][ref_idx[0],ref_idx[1]]
@@ -1400,13 +1415,13 @@ def setup_uq_expt_scene_ref_fixdel(outfile,scene_config,state_info,state_array,p
                 dfl13 = fout.create_dataset(metnm,data=metdt)
             elif row['dims'] == 2:
                 metdt = fmt[row['variable']][ref_idx[0],ref_idx[1]]
-                metout = numpy.tile(metdt,(1,))
+                metout = numpy.tile(metdt,(1,)) 
                 dfl13 = fout.create_dataset(metnm,data=metout)
         fmt.close()
 
         dt = h5py.special_dtype(vlen=str)
         da2 = fout.create_dataset('/Metadata/AcquisitionMode',(1,),dtype=dt)
-        da2[...] = amdstr
+        da2[...] = amdstr 
         dfl4 = fout.create_dataset('/SoundingGeometry/sounding_id',data=sdg_ids)
 
         # State Vector
@@ -1426,10 +1441,10 @@ def setup_uq_expt_scene_ref_fixdel(outfile,scene_config,state_info,state_array,p
 #                vcout[p,:] = numpy.exp(vcout[p,:])
         dfscn = fout.create_dataset('/StateVector/sampled_state_vectors',data=vcout)
 
-        tmpvr = state_names[smsqfp]
+        tmpvr = state_names[smsqfp] 
         for p in range(nstscn):
-            if ('BRDF' in tmpvr[p]):
-                tmpvr[p] = sbsq['surr_name'].values[p]
+            if ('BRDF' in tmpvr[p]): 
+                tmpvr[p] = sbsq['surr_name'].values[p] 
         dfscn = fout.create_dataset('/StateVector/state_vector_names',data=tmpvr)
 
         if (mxcmp is not None):
@@ -1496,7 +1511,7 @@ def setup_uq_expt_scene_ref_fixdel(outfile,scene_config,state_info,state_array,p
                 dfscn = fout.create_dataset(vrnpcv,data=cvout)
             else:
                 dm0 = prngrp[q]
-                dm1 = prcmps[q] / prngrp[q]
+                dm1 = prcmps[q] / prngrp[q] 
                 aprtmp = numpy.zeros((dm0,dm1,nreps),dtype=aprfl.dtype)
                 ct2 = 0
                 for b0 in range(dm0):
@@ -1520,22 +1535,22 @@ def setup_uq_expt_scene_ref_fixdel(outfile,scene_config,state_info,state_array,p
                 else:
                     cvout = numpy.zeros((prcmps[q],prcmps[q]),dtype=numpy.float64) + 1.0
                 dfscn = fout.create_dataset(vrnpcv,data=cvout)
-        fcv.close()
+        fcv.close()               
 
-        # Discrepancy
+        # Discrepancy 
         ndcmp = 30
         nchnl = 3048
         dscrp = numpy.zeros((nchnl,nreps),dtype=numpy.float32)
         scrtot = numpy.zeros((nchnl,nreps),dtype=numpy.float32)
         dcpfrm = pandas.read_csv(mdcfile, \
                                      dtype = {'component':str, 'file_name':str, \
-                                              'variable_name':str, 'index':int})
+                                              'variable_name':str, 'index':int}) 
         dscpfl = dcpfrm['file_name'].values[0]
         frmsb = dcpfrm.loc[dcpfrm['component'] == 'discrepancy_mean']
         mnvrnm = frmsb['variable_name'].values[0]
         frmsb = dcpfrm.loc[dcpfrm['component'] == 'discrepancy_sd']
         sdvrnm = frmsb['variable_name'].values[0]
-
+            
         frd = h5py.File(dscpfl,'r')
         errmn = frd[mnvrnm][:]
         errsd = frd[sdvrnm][:]
@@ -1545,7 +1560,7 @@ def setup_uq_expt_scene_ref_fixdel(outfile,scene_config,state_info,state_array,p
         sd01[errsd > 0.0] = 1.0
 
         mnspc = numpy.transpose(numpy.tile(modscl*errmn*sd01,(nreps,1)))
-        dscrp = mnspc
+        dscrp = mnspc 
 
         dfscn = fout.create_dataset('/SpectralParameters/sampled_radiance_offset',data=dscrp)
 
@@ -1560,12 +1575,12 @@ def setup_uq_expt_scene_ref_fixdel(outfile,scene_config,state_info,state_array,p
 def setup_uq_expt_scene_ref_bc(outfile,scene_config,state_info,state_array,prior_mean,state_names, \
                                sdg_ids,nreps,l1bfrm, metfrm, ref_idx,ref_l1b,ref_met,err_scl, \
                                moderr=None, fpidx=None, nrpdscrp=None, sdvl = 255115, mxcmp=None):
-    '''Generate a UQ experiment scene file given state vectors and
-       reference sounding information,
+    '''Generate a UQ experiment scene file given state vectors and 
+       reference sounding information, 
        discrepancy based on bias correction
          outfile:         Name of output scene file
-         scene_config:    Name of config CSV file
-         state_info:      State scaling data frame
+         scene_config:    Name of config CSV file 
+         state_info:      State scaling data frame 
          state_array:     Matrix of state vectors
          prior_mean:      Prior mean vector
          state_names:     State vector names
@@ -1612,7 +1627,7 @@ def setup_uq_expt_scene_ref_bc(outfile,scene_config,state_info,state_array,prior
         amdstr = numpy.empty((1,),"|O")
         amdstr[0] = aqmdout
 
-        # Met/L1b parameters from data frames
+        # Met/L1b parameters from data frames 
         flflt = numpy.array([-9.999e6],dtype=numpy.float32)
 
         fout = h5py.File(outfile,'w')
@@ -1621,7 +1636,7 @@ def setup_uq_expt_scene_ref_bc(outfile,scene_config,state_info,state_array,prior
         for index, row in l1bfrm.iterrows():
             if ( (row['dims'] == 3) and (row['sdgspec'] == 'Yes')):
                 l1bdt = f[row['variable']][ref_idx[0],ref_idx[1],0]
-                l1bout = numpy.tile(l1bdt,(1,))
+                l1bout = numpy.tile(l1bdt,(1,)) 
                 dfl13 = fout.create_dataset(row['variable'],data=l1bout)
             elif ((row['dims'] == 2) and (row['sdgspec'] == 'Yes') ):
                 l1bdt = f[row['variable']][ref_idx[0],ref_idx[1]]
@@ -1667,7 +1682,7 @@ def setup_uq_expt_scene_ref_bc(outfile,scene_config,state_info,state_array,prior
                 dfl13 = fout.create_dataset(metnm,data=metdt)
             elif row['dims'] == 2:
                 metdt = fmt[row['variable']][ref_idx[0],ref_idx[1]]
-                metout = numpy.tile(metdt,(1,))
+                metout = numpy.tile(metdt,(1,)) 
                 dfl13 = fout.create_dataset(metnm,data=metout)
             elif row['dims'] == 4:
                 metdt = fmt[row['variable']][ref_idx[0],ref_idx[1],:,:]
@@ -1682,7 +1697,7 @@ def setup_uq_expt_scene_ref_bc(outfile,scene_config,state_info,state_array,prior
 
         dt = h5py.special_dtype(vlen=str)
         da2 = fout.create_dataset('/Metadata/AcquisitionMode',(1,),dtype=dt)
-        da2[...] = amdstr
+        da2[...] = amdstr 
         dfl4 = fout.create_dataset('/SoundingGeometry/sounding_id',data=sdg_ids)
 
         # State Vector
@@ -1700,21 +1715,25 @@ def setup_uq_expt_scene_ref_bc(outfile,scene_config,state_info,state_array,prior
 #                vcout[p,:] = numpy.exp(vcout[p,:])
         dfscn = fout.create_dataset('/StateVector/sampled_state_vectors',data=vcout)
 
-        tmpvr = state_names[smsqfp]
+        tmpvr = state_names[smsqfp] 
+
+        grndnm = '/Ground/Albedo' 
         for p in range(nstscn):
             if ('BRDF' in tmpvr[p]):
-                tmpvr[p] = sbsq['surr_name'].values[p]
-        dfscn = fout.create_dataset('/StateVector/state_vector_names',data=tmpvr)
-
+                if (pandas.notnull(sbsq['alt_source'].values[p])):
+                    tmpvr[p] = sbsq['surr_name'].values[p]
+                else:
+                    grndnm = '/Ground/Brdf' 
         if (mxcmp is not None):
             dfscn = fout.create_dataset('/StateVector/mixture_component',data=mxcmp)
+        dfscn = fout.create_dataset('/StateVector/state_vector_names',data=tmpvr)
 
         # Prior
         prstfl = '/groups/algorithm/l2_fp/builds/git_master/build/input/oco/input/l2_oco_static_input.h5'
         if sfctyp == 'land':
             prgrps = ['/Gas/CO2','/Gas/H2O_Scaling_factor','/Surface_Pressure','/Temperature/Offset', \
                       '/Aerosol/Merra/Gaussian/Log','/Aerosol/Ice/Gaussian/Log','/Aerosol/Water/Gaussian/Log', \
-                      '/Aerosol/ST/Gaussian/Log','/Ground/Albedo','/Instrument/Dispersion','/Fluorescence']
+                      '/Aerosol/ST/Gaussian/Log',grndnm,'/Instrument/Dispersion','/Fluorescence']
             prcmps =   [20, 1, 1, 1, 6, 3, 3, 3, 6, 3, 2]
             prngrp = [ 1, 1, 1, 1, 2, 1, 1, 1, 3, 1, 1]
         elif sfctyp == 'ocean':
@@ -1779,12 +1798,22 @@ def setup_uq_expt_scene_ref_bc(outfile,scene_config,state_info,state_array,prior
                 dfscn = fout.create_dataset(vrnpcv,data=cvout)
             else:
                 dm0 = prngrp[q]
-                dm1 = prcmps[q] / prngrp[q]
-                aprtmp = numpy.zeros((dm0,dm1,nreps),dtype=aprfl.dtype)
+                dm1 = prcmps[q] / prngrp[q] 
+                if prgrps[q] == '/Ground/Brdf':
+                    prgrd = fcv['/Ground/Brdf/a_priori'][:,:] 
+                    aprtmp = numpy.zeros((dm0,prgrd.shape[1],nreps),dtype=aprfl.dtype)
+                    nfx = prgrd.shape[1] - dm1
+                    # Fixed coefficients are first, variable weights at end
+                    for b0 in range(dm0):
+                        for gd2 in range(nfx):
+                            aprtmp[b0,gd2,:] = prgrd[b0,gd2]
+                else:
+                    aprtmp = numpy.zeros((dm0,dm1,nreps),dtype=aprfl.dtype)
+                    nfx = 0
                 ct2 = 0
                 for b0 in range(dm0):
                     for b1 in range(dm1):
-                        aprtmp[b0,b1,:] = aprfl[gsb[ct2],:]
+                        aprtmp[b0,b1+nfx,:] = aprfl[gsb[ct2],:]
                         ct2 = ct2 + 1
                 vrnmpr = '%s/a_priori' % (prgrps[q])
                 dfscn = fout.create_dataset(vrnmpr,data=aprtmp)
@@ -1799,24 +1828,24 @@ def setup_uq_expt_scene_ref_bc(outfile,scene_config,state_info,state_array,prior
                     if prgrps[q] == '/Aerosol/Merra/Gaussian/Log':
                         cvout = numpy.tile(cvtmp,(2,1,1))
                     elif ( (prgrps[q] == '/Ground/Albedo') and (sfctyp == 'ocean') ):
-                        vrocn = '/Ground/Coxmunk_Albedo_Quadratic/covariance'
+                        vrocn = '/Ground/Coxmunk_Albedo_Quadratic/covariance' 
                         cvout = fcv[vrocn][:,0:2,0:2]
-                        #cvout[:,1,1] = 1.0
+                        #cvout[:,1,1] = 1.0 
                     else:
                         cvout = cvtmp
                 else:
                     cvout = numpy.zeros((prcmps[q],prcmps[q]),dtype=numpy.float64) + 1.0
                 dfscn = fout.create_dataset(vrnpcv,data=cvout)
-        fcv.close()
+        fcv.close()               
 
-        # Discrepancy
+        # Discrepancy 
         nchnl = 3048
         dscrp = numpy.zeros((nchnl,nreps),dtype=numpy.float32)
         if ( (moderr) or (moderr is None) ):
             scrtot = numpy.zeros((nchnl,nreps),dtype=numpy.float32)
             dcpfrm = pandas.read_csv(mdcfile, \
                                      dtype = {'component':str, 'file_name':str, \
-                                              'variable_name':str, 'index':int})
+                                              'variable_name':str, 'index':int}) 
             dscpfl = dcpfrm['file_name'].values[0]
             frmsb = dcpfrm.loc[dcpfrm['component'] == 'discrepancy_mean']
             mnvrnm = frmsb['variable_name'].values[0]
@@ -1830,8 +1859,8 @@ def setup_uq_expt_scene_ref_bc(outfile,scene_config,state_info,state_array,prior
             stidx = frmsb['index'].values[0]
             frmsb = dcpfrm.loc[dcpfrm['component'] == 'discrepancy_end_index']
             fnidx = frmsb['index'].values[0]
-
-            if fpidx is None:
+            
+            if fpidx is None: 
                 frd = h5py.File(dscpfl,'r')
                 errmn = frd[mnvrnm][:]
                 errsd = frd[sdvrnm][:]
@@ -1849,7 +1878,7 @@ def setup_uq_expt_scene_ref_bc(outfile,scene_config,state_info,state_array,prior
                 frd.close()
 
             errmn[errmn == msgarr[0]] = 0.0
-
+            
 
             # Tile mean and scale factor
             mnspc = numpy.transpose(numpy.tile(errmn,(nreps,1)))
@@ -1879,3 +1908,4 @@ def setup_uq_expt_scene_ref_bc(outfile,scene_config,state_info,state_array,prior
         print(msg1)
 
     return
+
