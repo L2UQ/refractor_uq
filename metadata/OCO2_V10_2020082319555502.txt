@@ -1,0 +1,3 @@
+https://data.gesdisc.earthdata.nasa.gov/data/OCO2_DATA/OCO2_L1B_Science.10r/2020/236/oco2_L1bScND_32686a_200823_B10206r_210506204351.h5
+https://data.gesdisc.earthdata.nasa.gov/data/OCO2_DATA/OCO2_L2_Diagnostic.10r/2020/236/oco2_L2DiaND_32686a_200823_B10206r_210905171547.h5
+https://data.gesdisc.earthdata.nasa.gov/data/OCO2_DATA/OCO2_L2_Met.10r/2020/236/oco2_L2MetND_32686a_200823_B10206r_210506064119.h5
