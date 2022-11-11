@@ -15,12 +15,19 @@ For each case, the corresponding data file (`land_state_case_id.csv`) is read an
 
 Example 2: Retrievals With Model Discrepancy
 
-This retrieval simulation experiment incorporates forward model discrepancy to introduce realistic imperfect knowledge into the observing system simulation. The OCO-2 reference sounding for this example occurs over Texas during August 2020. 
+This retrieval simulation experiment incorporates forward model discrepancy to introduce realistic imperfect knowledge into the observing system simulation. The OCO-2 reference sounding for this example occurs over Texas during August 2020. The reference sounding ID is
+
+```
+ref_sounding_id = "2020082319555502"
+```
 
 1. Supporting OCO-2 operational data products can be downloaded from the [GES DISC](https://disc.gsfc.nasa.gov/)
-    - Accessing publicly available AIRS products from the [GES DISC](https://disc.gsfc.nasa.gov/) requires registration for a free NASA Earthdata acocunt.
+    - Accessing publicly available OCO-2 products from the [GES DISC](https://disc.gsfc.nasa.gov/) requires registration for a free NASA Earthdata acocunt.
     - Additional steps and general instructions for downloading/subsetting products can be found at the [data access page](https://disc.gsfc.nasa.gov/data-access)
     - The list of supporting data are in the repository as `/metadata/OCO2_V10_2020082319555502.txt` and can be downloaded with `wget` with the command
 
             wget --load-cookies ~/.urs_cookies --save-cookies ~/.urs_cookies --auth-no-challenge=on --keep-session-cookies -i OCO2_V10_2020082319555502.txt  
-    The products total about 350 MB in size.
+    The products total about 2.4 GB in size.  
+    GES DISC data access is gradually being moved to the [Earthdata Cloud](https://disc.gsfc.nasa.gov/information/documents?title=Migrating%20to%20the%20Cloud) as of 2022-23, so data access capabilities will be subject to change.
+2. The general experiment workflow in the repository [README](../README.md) can be followed. The `ref_sounding_id` can be changed in scripts as noted above.
+3. Incorporate model discrepancy
