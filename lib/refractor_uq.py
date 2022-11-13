@@ -85,7 +85,7 @@ def process_field_list(csvfl):
 
     return(df)
 
-def setup_uq_l1b(uq_l1b_file,l1b_fields,met_fields,ref_idx,ref_l1b,ref_met,sdg_hdr,nsdg,save_noise=False):
+def setup_uq_l1b(uq_l1b_file,l1b_fields,met_fields,ref_idx,ref_l1b,ref_met,sdg_hdr,nsdg,save_noise=False,discrep=False):
     '''Generate a UQ Level 1B file and fill with reference fields
          uq_l1b_file:  Name of output L1B file
          l1b_fields:   Data frame with level 1B fields
@@ -96,6 +96,7 @@ def setup_uq_l1b(uq_l1b_file,l1b_fields,met_fields,ref_idx,ref_l1b,ref_met,sdg_h
          sdg_hdr:      Sounding ID header for output  
          nsdg:         Number of soundings for UQ
          save_noise:   Option to save noise standard deviations
+         discrep:      Option to simulate/save model discrepancy
     '''
 
     # Above arguments could become a structure/dictionary
@@ -136,10 +137,21 @@ def setup_uq_l1b(uq_l1b_file,l1b_fields,met_fields,ref_idx,ref_l1b,ref_met,sdg_h
         dfrd = fout.create_dataset('SoundingMeasurements/radiance_errsd_o2',data=dtrd)
         dfrd.attrs['missing_value'] = flflt
         dfrd.attrs['_FillValue'] = flflt
-        dfrd = fout.create_dataset('SoundingMeasurements/radiance_weak_errsd_co2',data=dtrd)
+        dfrd = fout.create_dataset('SoundingMeasurements/radiance_errsd_weak_co2',data=dtrd)
         dfrd.attrs['missing_value'] = flflt
         dfrd.attrs['_FillValue'] = flflt
-        dfrd = fout.create_dataset('SoundingMeasurements/radiance_strong_errsd_co2',data=dtrd)
+        dfrd = fout.create_dataset('SoundingMeasurements/radiance_errsd_strong_co2',data=dtrd)
+        dfrd.attrs['missing_value'] = flflt
+        dfrd.attrs['_FillValue'] = flflt
+        
+    if discrep:
+        dfrd = fout.create_dataset('SoundingMeasurements/radiance_offset_o2',data=dtrd)
+        dfrd.attrs['missing_value'] = flflt
+        dfrd.attrs['_FillValue'] = flflt
+        dfrd = fout.create_dataset('SoundingMeasurements/radiance_offset_weak_co2',data=dtrd)
+        dfrd.attrs['missing_value'] = flflt
+        dfrd.attrs['_FillValue'] = flflt
+        dfrd = fout.create_dataset('SoundingMeasurements/radiance_offset_strong_co2',data=dtrd)
         dfrd.attrs['missing_value'] = flflt
         dfrd.attrs['_FillValue'] = flflt
         
@@ -301,33 +313,27 @@ def oco2_mapping_list(sounding_id, map_dirs, search_list):
                 crdy = stdy + datetime.timedelta(days=0)
             sspt = -1
             j = 0
-            while ( (sspt < 0) and (j < len(search_list) ) ):
+            while ( (sdfd < 0) and (j < len(search_list)) ):
                 drchk = '%s/%04d/%02d/%02d/%s' % (search_list[j],crdy.year,crdy.month,crdy.day,map_dirs[crky])
-                #print(drchk)
                 if (os.path.isdir(drchk)):
-                    sspt = j
-                    #print('Present')
+                    fllst = os.listdir(drchk)
+                    q = 0
+                    while ( (sdfd < 0) and (q < len(fllst)) ):
+                        if (".h5" in fllst[q]):
+                            flh5 = '%s/%s' % (drchk,fllst[q])
+                            if ( (map_dirs[crky] == 'L1bSc') or (map_dirs[crky] == 'L2Met') \
+                                 or (map_dirs[crky] == 'L2ABP') or (map_dirs[crky] == 'L2IDP') or (map_dirs[crky] == 'L2CPr') ): 
+                                l1bout = oco2_sounding_idx_match(sounding_id,flh5)
+                                if l1bout is not None:
+                                    sdfd = l1bout[0]
+                                    dctout[crky] = flh5
+                            elif ( (map_dirs[crky] == 'L2Dia') or (map_dirs[crky] == 'L2Std') ): 
+                                l2out = oco2_sounding_idx_match_l2(sounding_id,flh5)
+                                if l2out is not None:
+                                    sdfd = l2out
+                                    dctout[crky] = flh5
+                        q = q + 1
                 j = j + 1
-            if sspt >= 0:
-            
-                drchk = '%s/%04d/%02d/%02d/%s' % (search_list[sspt],crdy.year,crdy.month,crdy.day,map_dirs[crky])
-                fllst = os.listdir(drchk)
-                q = 0
-                while ( (sdfd < 0) and (q < len(fllst)) ):
-                    if (".h5" in fllst[q]):
-                        flh5 = '%s/%s' % (drchk,fllst[q])
-                        if ( (map_dirs[crky] == 'L1bSc') or (map_dirs[crky] == 'L2Met') \
-                             or (map_dirs[crky] == 'L2ABP') or (map_dirs[crky] == 'L2IDP') or (map_dirs[crky] == 'L2CPr') ): 
-                            l1bout = oco2_sounding_idx_match(sounding_id,flh5)
-                            if l1bout is not None:
-                                sdfd = l1bout[0]
-                                dctout[crky] = flh5
-                        elif ( (map_dirs[crky] == 'L2Dia') or (map_dirs[crky] == 'L2Std') ): 
-                            l2out = oco2_sounding_idx_match_l2(sounding_id,flh5)
-                            if l2out is not None:
-                                sdfd = l2out
-                                dctout[crky] = flh5
-                    q = q + 1
             dctr = dctr + 1
 
     return dctout
@@ -851,7 +857,7 @@ def setup_uq_expt_scene(scene_config,state_info_file,moderr=None,sdvl = 255115):
 
     return
 
-def uq_expt_aggregate_l1b(expt_scene_file,output_dir):
+def uq_expt_aggregate_l1b(expt_scene_file,output_dir,discrep=False):
     '''Propagate individual forward model radiances to a UQ experiment result output file 
          expt_scene_file:     Name of experiment scene file 
          output_dir:          Location of individual retrieval output files
@@ -867,6 +873,10 @@ def uq_expt_aggregate_l1b(expt_scene_file,output_dir):
     fmwk = f['/SoundingMeasurements/noiseless_radiance_weak_co2'][:,0,:]
     fmst = f['/SoundingMeasurements/noiseless_radiance_strong_co2'][:,0,:]
     xtr = f['/StateVector/true_state_vector'][:,:]
+    if discrep:
+        ofo2 = f['/SoundingMeasurements/radiance_offset_o2'][:,0,:]
+        ofwk = f['/SoundingMeasurements/radiance_offset_weak_co2'][:,0,:]
+        ofst = f['/SoundingMeasurements/radiance_offset_strong_co2'][:,0,:]
     f.close()
 
     nsnd = sounding_id.shape[0]
@@ -889,6 +899,10 @@ def uq_expt_aggregate_l1b(expt_scene_file,output_dir):
             sfmwk = f['/SoundingMeasurements/noiseless_radiance_weak_co2'][:]
             sfmst = f['/SoundingMeasurements/noiseless_radiance_strong_co2'][:]
             sxtr = f['/StateVector/true_state_vector'][:]
+            if discrep:
+                sofo2 = f['/SoundingMeasurements/radiance_offset_o2'][:]
+                sofwk = f['/SoundingMeasurements/radiance_offset_weak_co2'][:]
+                sofst = f['/SoundingMeasurements/radiance_offset_strong_co2'][:]
             f.close()
 
             # Update
@@ -898,6 +912,10 @@ def uq_expt_aggregate_l1b(expt_scene_file,output_dir):
             fmo2[j,:] = sfmo2[:]
             fmwk[j,:] = sfmwk[:]
             fmst[j,:] = sfmst[:]
+            if discrep:
+                ofo2[j,:] = sofo2[:]
+                ofwk[j,:] = sofwk[:]
+                ofst[j,:] = sofst[:]
             xtr[j,:] = sxtr[:]
         else:
             str2 = 'No retrieval output for %d ' % (sounding_id[j])
@@ -917,6 +935,14 @@ def uq_expt_aggregate_l1b(expt_scene_file,output_dir):
     varwk[:,0,:] = fmwk[:,:]
     varst = fout['/SoundingMeasurements/noiseless_radiance_strong_co2']
     varst[:,0,:] = fmst[:,:]
+
+    if discrep:
+        varo2 = fout['/SoundingMeasurements/radiance_offset_o2']
+        varo2[:,0,:] = ofo2[:,:]
+        varwk = fout['/SoundingMeasurements/radiance_offset_weak_co2']
+        varwk[:,0,:] = ofwk[:,:]
+        varst = fout['/SoundingMeasurements/radiance_offset_strong_co2']
+        varst[:,0,:] = ofst[:,:]
 
     varx = fout['/StateVector/true_state_vector']
     varx[:,:] = xtr[:,:]
