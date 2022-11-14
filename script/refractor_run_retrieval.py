@@ -15,9 +15,9 @@ import numpy
 import h5py
 import refractor_uq
 
-ref_sounding_id = "2015080820071304"
+ref_sounding_id = "2020082319555502"
 sim_sdg_hdr = int(ref_sounding_id[0:10])
-sim_l1b = 'lnd_nadir_refractor_expt_l1b_uqscene.h5'
+sim_l1b = 'lnd_nadir_refractor_expt_l1b_uqscene_202008.h5'
 
 sidx = int(sys.argv[1]) 
 l1b_file = sim_l1b
@@ -42,13 +42,18 @@ else:
 csvfl = 'land_state_%s.csv' % (ref_sounding_id)
 svdt = pandas.read_csv(csvfl, dtype={'SVName':str, 'SVValue':float}, encoding='utf-8-sig')
 nst = svdt.shape[0]
-xin = svdt['SVValue']
+xin = numpy.array(svdt['SVValue'])
 
 print(sounding_id)
 sndtxt = '%d' % (sounding_id)
 config_def = retrieval_config_definition(l1b_file, met_file, sndtxt)
-config_inst = process_config(config_def)
+config_def['retrieval']['solver']['max_iteration'] = 12
+config_def['retrieval']['solver']['max_divergence'] = 5
+config_def['retrieval']['solver']['gamma_inital'] = 10.0
+config_def['retrieval']['initial_guess'] = xin
+config_def['retrieval']['a_priori'] = xin
 
+config_inst = process_config(config_def)
 
 fm = config_inst['forward_model']
 sv = config_inst['retrieval']['state_vector']
@@ -57,10 +62,8 @@ print(config_inst['retrieval']['initial_guess'].shape)
 
 # Update initial guess, apriori 
 aprorig = config_inst['retrieval']['initial_guess']
-config_inst['retrieval']['initial_guess'] = xin
 pprint(config_inst['retrieval']['initial_guess'])
 nstate = aprorig.shape[0]
-config_inst['retrieval']['a_priori'] = xin
 pprint(config_inst['retrieval']['a_priori'])
 
 
