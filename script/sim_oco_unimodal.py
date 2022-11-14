@@ -28,13 +28,13 @@ def unpackcov(pckmat,nelm):
     xout = x2l + x2
     return xout
 
-rdsd = 231112 
+rdsd = 424265 
 print(rdsd)
 random.seed(rdsd)
 
-ref_sounding_id = "2015080820071304"
-l1b_file = "oco2_L1bScND_05862a_150808_B10003r_191117045059.h5"
-met_file = "oco2_L2MetND_05862a_150808_B10003r_191117035013.h5"
+ref_sounding_id = "2020082319555502"
+l1b_file = "oco2_L1bScND_32686a_200823_B10206r_210506204351.h5"
+met_file = "oco2_L2MetND_32686a_200823_B10206r_210506064119.h5"
 
 # Start with prior from example
 csvfl = 'land_state_%s.csv' % (ref_sounding_id)
@@ -119,8 +119,12 @@ dtrfc[:,46] = dspcf[2,1]
 # No EOF effect
 dtrfc[:,47:56] = 0.0
 
+# Fix SIF at prior
+dtrfc[:,56] = prmn[56] / dffp['sv_scale'].values[56]
+dtrfc[:,57] = prmn[57] / dffp['sv_scale'].values[57]
+
 print(prmn)
-outstr = 'lnd_nadir_201508_refractor_state_vectors.h5'
+outstr = 'lnd_nadir_202008_refractor_state_vectors.h5'
 f = h5py.File(outstr,'w')
 stvr = f.create_dataset('true_state_vector',data=dtrfc)
 sdvr = f.create_dataset('sounding_id',data=sdgid)

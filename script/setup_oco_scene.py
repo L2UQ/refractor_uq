@@ -8,9 +8,9 @@ import numpy
 import h5py
 import refractor_uq
 
-ref_sounding_id = "2015080820071304"
-l1b_file = "oco2_L1bScND_05862a_150808_B10003r_191117045059.h5"
-met_file = "oco2_L2MetND_05862a_150808_B10003r_191117035013.h5"
+ref_sounding_id = "2020082319555502"
+l1b_file = "oco2_L1bScND_32686a_200823_B10206r_210506204351.h5"
+met_file = "oco2_L2MetND_32686a_200823_B10206r_210506064119.h5"
 l1b_fields = 'oco2_l1b_fields.csv'
 met_fields = 'oco2_met_fields.csv'
 
@@ -38,12 +38,13 @@ metflds.dims = metflds.dims.astype(int)
 print(metflds)
 
 # Simulation setup
-nsim = 100
+nsim = 5000
 sim_sdg_hdr = int(ref_sounding_id[0:10])
 print(sim_sdg_hdr)
-sim_l1b = 'lnd_nadir_refractor_expt_l1b_uqscene_100.h5' 
+sim_l1b = 'lnd_nadir_refractor_expt_l1b_uqscene_202008.h5' 
 
-refractor_uq.setup_uq_l1b(sim_l1b,l1bflds,metflds,sdspt,l1b_file,met_file,sim_sdg_hdr,nsim,save_noise=True)
+refractor_uq.setup_uq_l1b(sim_l1b,l1bflds,metflds,sdspt,l1b_file,met_file,sim_sdg_hdr,nsim, \
+                          save_noise=True,discrep=True)
 
 
 

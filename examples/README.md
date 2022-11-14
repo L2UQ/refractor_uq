@@ -30,4 +30,8 @@ ref_sounding_id = "2020082319555502"
     The products total about 2.4 GB in size.  
     GES DISC data access is gradually being moved to the [Earthdata Cloud](https://disc.gsfc.nasa.gov/information/documents?title=Migrating%20to%20the%20Cloud) as of 2022-23, so data access capabilities will be subject to change.
 2. The general experiment workflow in the repository [README](../README.md) can be followed. The `ref_sounding_id` can be changed in scripts as noted above.
+    - In `setup_oco_scene_discrep.py`, the call to `setup_uq_l1b` should use the `discrep=True` option
 3. Incorporate model discrepancy
+    - At step 4 of the procedure (execute individual forward runs), use the `fwdrun_oco_save_sing_discrep.py` script
+    - The discrepancy distribution parameters are found in the supporting file `lnd_nadir_202008_reg02_combined_radiance_parameters_bc_fp8.h5`
+    - In `combine_l1b_oco.py`, the call to `uq_expt_aggregate_l1b` should use the `discrep=True` option
