@@ -9,7 +9,7 @@ import h5py
 import refractor_uq
 
 expt_dir = os.path.realpath("./")
-scene_file = os.path.join(expt_dir,"lnd_nadir_refractor_expt_l1b_uqscene.h5")
+scene_file = os.path.join(expt_dir,"lnd_nadir_refractor_expt_l1b_uqscene_202008.h5")
 output_dir = os.path.join(expt_dir,"l1b")
 
 
