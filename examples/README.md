@@ -1,6 +1,6 @@
 ### examples
 
-Example 1: Forward Model Perturbations
+**Example 1: Forward Model Perturbations**
 
 The script `fmexamp_perturb.py` can be run with multiple perturbations to the state vector and viewing geometry, using the `case_id` variable.
 For each case, the corresponding data file (`land_state_case_id.csv`) is read and the forward model is evaluated. The cases available are 
@@ -13,7 +13,7 @@ For each case, the corresponding data file (`land_state_case_id.csv`) is read an
 
 *** 
 
-Example 2: Retrievals With Model Discrepancy
+**Example 2: Retrievals With Model Discrepancy**
 
 This retrieval simulation experiment incorporates forward model discrepancy to introduce realistic imperfect knowledge into the observing system simulation. The OCO-2 reference sounding for this example occurs over Texas during August 2020. The reference sounding ID is
 
