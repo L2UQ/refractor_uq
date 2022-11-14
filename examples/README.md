@@ -35,3 +35,6 @@ ref_sounding_id = "2020082319555502"
     - At step 4 of the procedure (execute individual forward runs), use the `fwdrun_oco_save_sing_discrep.py` script
     - The discrepancy distribution parameters are found in the supporting file `lnd_nadir_202008_reg02_combined_radiance_parameters_bc_fp8.h5`
     - In `combine_l1b_oco.py`, the call to `uq_expt_aggregate_l1b` should use the `discrep=True` option
+4. Retrievals and aggregation can be run in the same fashion as other experiments
+
+An [example notebook](../visualization/refrac_discrep_summary.ipynb) with retrieval results is available in the `visualization` directory
