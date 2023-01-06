@@ -53,7 +53,7 @@ The operational OCO-2/3 retrieval algorithms include aerosol information in the 
 
 Like Example 1, this example includes a script to run forward model perturbations. However, in this case, a common state vector is used and the perturbations consist of different combinations of aerosol types. Some initial processing is needed to enable the MERRA aerosol types. The state vector and viewing geometry use the reference sounding from Example 2.
 
-1. The script `make_merra_cov.py` enables the MERRA types in construction of the retrieval prior covariance. This step is needed to allow the ReFRACtor coniguration to run properly. This step only needs to be run once. 
+1. The script `make_merra_cov.py` enables the MERRA types in construction of the retrieval prior covariance. This step is needed to allow the ReFRACtor configuration to run properly. This step only needs to be run once. 
 2. The script `fmexamp_perturb_aertyp.py` executes a forward model run with a specified combination of aerosol types. The types are specified with the line  
 
             aer_case_id =  [ "DU", "SO", "water", "ice" ]
