@@ -8,6 +8,7 @@ sys.path.append(os.environ['OCO_CONFIG_DIR'])
 from refractor.factory import process_config
 from refractor import framework as rf
 from retrieval_config import retrieval_config_definition
+import refractor.factory.creator as creator
 
 from pprint import pprint
 from numpy import random
@@ -25,15 +26,20 @@ pwts = numpy.array( [1.0/38.0, 1.0/19.0, 1.0/19.0, 1.0/19.0, 1.0/19.0, \
 ref_sounding_id = "2020082319555502" 
 l1b_file = "oco2_L1bScND_32686a_200823_B10206r_210506204351.h5"
 met_file = "oco2_L2MetND_32686a_200823_B10206r_210506064119.h5" 
+aerosol_prop_file = os.path.join(os.environ["REFRACTOR_INPUTS"], "l2_aerosol_combined.h5")
 
 # Aerosol choices for this run, suggest DU + SO as baseline
-aer_case_id =  [ "SO", "BC", "water", "ice" ]
+aer_case_id =  [ "DU", "SS", "water", "ice" ]
 case_str = '%s_%s' % (aer_case_id[0], aer_case_id[1])
 
 # Read in the case state vector/prior
 csvfl = 'land_state_%s.csv' % (ref_sounding_id)
 svdt = pandas.read_csv(csvfl, dtype={'SVName':str, 'SVValue':float}, encoding='utf-8-sig')
 nst = svdt.shape[0]
+
+# Adjust first AOD to emphasize differences
+svdt['SVValue'].values[23] = -2.8
+
 
 if os.path.exists(l1b_file):
     print('L1B present')
@@ -50,8 +56,18 @@ merra_aer_list = ["DU","SS","BC","OC","SO"]
 config_def = retrieval_config_definition(l1b_file, met_file, ref_sounding_id)
 for j in range(len(merra_aer_list)):
     curtyp = merra_aer_list[j]
-    config_def['atmosphere']['aerosol'][curtyp] = config_def['atmosphere']['aerosol']['kahn_2b'] 
-    config_def['atmosphere']['aerosol'][curtyp]['properties']['prop_name'] = curtyp
+    config_def['atmosphere']['aerosol'][curtyp] = {
+                    'creator': creator.aerosol.AerosolDefinition,
+                    'extinction': {
+                        'creator': creator.aerosol.AerosolShapeGaussian,
+                        'value': numpy.array([-4.38203, 1, 0.2]),
+                    },
+                    'properties': {
+                        'creator': creator.aerosol.AerosolPropertyHdf,
+                        'filename': aerosol_prop_file,
+                        'prop_name': curtyp,
+                    },
+                }
 
 # Select types
 config_def['atmosphere']['aerosol']['aerosols'] = aer_case_id

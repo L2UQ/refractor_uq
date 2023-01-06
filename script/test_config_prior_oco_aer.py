@@ -37,9 +37,19 @@ merra_aer_list = ["DU","SS","BC","OC","SO"]
 config_def = retrieval_config_definition(l1b_file, met_file, ref_sounding_id)
 for j in range(len(merra_aer_list)):
     curtyp = merra_aer_list[j]
-    config_def['atmosphere']['aerosol'][curtyp] = config_def['atmosphere']['aerosol']['kahn_2b'] 
-    config_def['atmosphere']['aerosol'][curtyp]['properties']['prop_name'] = curtyp
-
+    config_def['atmosphere']['aerosol'][curtyp] = {
+                    'creator': creator.aerosol.AerosolDefinition,
+                    'extinction': {
+                        'creator': creator.aerosol.AerosolShapeGaussian,
+                        'value': numpy.array([-4.38203, 1, 0.2]),
+                    },
+                    'properties': {
+                        'creator': creator.aerosol.AerosolPropertyHdf,
+                        'filename': aerosol_prop_file,
+                        'prop_name': curtyp,
+                    },
+                }
+ 
 # Select types
 config_def['atmosphere']['aerosol']['aerosols'] = [ "DU", "SO", "water", "ice" ]
 
