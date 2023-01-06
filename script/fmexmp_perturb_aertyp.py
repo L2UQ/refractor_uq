@@ -29,7 +29,7 @@ met_file = "oco2_L2MetND_32686a_200823_B10206r_210506064119.h5"
 aerosol_prop_file = os.path.join(os.environ["REFRACTOR_INPUTS"], "l2_aerosol_combined.h5")
 
 # Aerosol choices for this run, suggest DU + SO as baseline
-aer_case_id =  [ "DU", "SS", "water", "ice" ]
+aer_case_id =  [ "DU", "SO", "water", "ice" ]
 case_str = '%s_%s' % (aer_case_id[0], aer_case_id[1])
 
 # Read in the case state vector/prior

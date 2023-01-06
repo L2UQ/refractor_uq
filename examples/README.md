@@ -38,3 +38,27 @@ ref_sounding_id = "2020082319555502"
 4. Retrievals and aggregation can be run in the same fashion as other experiments
 
 An [example notebook](../visualization/refrac_discrep_summary.ipynb) with retrieval results is available in the `visualization` directory
+
+*** 
+
+**Example 3: Changing Aerosol Types**
+
+The operational OCO-2/3 retrieval algorithms include aerosol information in the state vector. The aerosol amount and vertical position are retrie ved for multiple aerosol types. Two of these aerosol types are selected from a collection of five types in the MERRA aerosol collection. The types are 
+
+* DU: Dust
+* SS: Sea Salt
+* BC: Black Carbon
+* OC: Organic Carbon
+* SO: Sulfate
+
+Like Example 1, this example includes a script to run forward model perturbations. However, in this case, a common state vector is used and the perturbations consist of different combinations of aerosol types. Some initial processing is needed to enable the MERRA aerosol types. The state vector and viewing geometry use the reference sounding from Example 2.
+
+1. The script `make_meera_cov.py` enables the MERRA types in construction of the retrieval prior covariance. This step is needed to allow the ReFRACtor coniguration to run properly. This step only needs to be run once. 
+2. The script `fmexamp_perturb_aertyp.py` executes a forward model run with a specified combination of aerosol types. The types are specified with the line  
+
+            aer_case_id =  [ "DU", "SO", "water", "ice" ]
+The combination of DU and SO is a suggested baseline case. Note also that the ReFRACtor configuration definition is supplemented with additional definitions for all of the MERRA aerosol types before the configuration is processed, and the aerosol collection used for the forward model run is specified with 
+
+            config_def['atmosphere']['aerosol']['aerosols'] = aer_case_id
+3. The forward model script can be repeated for different combinations of aerosol types. Differences in the resulting radiances can be visualized with the script `visualization/rfrc_plot_fm_pert.py`
+
