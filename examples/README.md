@@ -1,6 +1,8 @@
-### examples
+## Examples
 
-**Example 1: Forward Model Perturbations**
+### Example 1
+
+**Forward Model Perturbations**
 
 The script `fmexamp_perturb.py` can be run with multiple perturbations to the state vector and viewing geometry, using the `case_id` variable.
 For each case, the corresponding data file (`land_state_case_id.csv`) is read and the forward model is evaluated. The cases available are 
@@ -13,7 +15,9 @@ For each case, the corresponding data file (`land_state_case_id.csv`) is read an
 
 *** 
 
-**Example 2: Retrievals With Model Discrepancy**
+### Example 2
+
+**Retrievals With Model Discrepancy**
 
 This retrieval simulation experiment incorporates forward model discrepancy to introduce realistic imperfect knowledge into the observing system simulation. The OCO-2 reference sounding for this example occurs over Texas during August 2020. The reference sounding ID is
 
@@ -41,7 +45,9 @@ An [example notebook](../visualization/refrac_discrep_summary.ipynb) with retrie
 
 *** 
 
-**Example 3: Changing Aerosol Types**
+### Example 3 
+
+**Changing Aerosol Types**
 
 The operational OCO-2/3 retrieval algorithms include aerosol information in the state vector. The aerosol amount and vertical position are retrieved for multiple aerosol types. Two of these aerosol types are selected from a collection of five types in the MERRA aerosol collection. The types are 
 
