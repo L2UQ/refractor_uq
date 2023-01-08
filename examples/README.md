@@ -43,7 +43,7 @@ An [example notebook](../visualization/refrac_discrep_summary.ipynb) with retrie
 
 **Example 3: Changing Aerosol Types**
 
-The operational OCO-2/3 retrieval algorithms include aerosol information in the state vector. The aerosol amount and vertical position are retrie ved for multiple aerosol types. Two of these aerosol types are selected from a collection of five types in the MERRA aerosol collection. The types are 
+The operational OCO-2/3 retrieval algorithms include aerosol information in the state vector. The aerosol amount and vertical position are retrieved for multiple aerosol types. Two of these aerosol types are selected from a collection of five types in the MERRA aerosol collection. The types are 
 
 * DU: Dust
 * SS: Sea Salt
