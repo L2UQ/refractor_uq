@@ -8,7 +8,7 @@ merra_aer_list = ["DU","SS","BC","OC","SO"]
 
 if os.path.isfile(covariance_file):
     f = h5py.File(covariance_file,'r+')
-    aercv = f['/aerosol_extinction/gaussian_log/kahn_2b'][:,:]
+    aercv = f['/aerosol_extinction/gaussian_log/merra'][:,:]
     for k in range(len(merra_aer_list)):
         cvnm = '/aerosol_extinction/gaussian_log/%s' % (merra_aer_list[k])
         if cvnm in f:
