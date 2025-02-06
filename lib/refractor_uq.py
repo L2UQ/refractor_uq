@@ -201,6 +201,10 @@ def setup_uq_l1b(uq_l1b_file,l1b_fields,met_fields,ref_idx,ref_l1b,ref_met,sdg_h
             metdt = fmt[row['variable']][ref_idx[0],ref_idx[1],:]
             metout = numpy.tile(metdt,(nsdg,1,1)) 
             dfl13 = fout.create_dataset(row['variable'],data=metout)
+        if row['dims'] == 4:
+            metdt = fmt[row['variable']][ref_idx[0],ref_idx[1],:,:]
+            metout = numpy.tile(metdt,(nsdg,1,1,1)) 
+            dfl13 = fout.create_dataset(row['variable'],data=metout)
         elif row['dims'] == 2:
             metdt = fmt[row['variable']][ref_idx[0],ref_idx[1]]
             metout = numpy.tile(metdt,(nsdg,1)) 
@@ -337,6 +341,62 @@ def oco2_mapping_list(sounding_id, map_dirs, search_list):
             dctr = dctr + 1
 
     return dctout
+
+def qts_mapping_list(sounding_id, map_dirs, search_list):
+    '''Assemble the collection of supporting data files for sounding ID
+       This routine uses QTS or other test data instead of operational products
+       This information is used in other routines 
+       
+       sounding_id    - OCO-2/3 sounding ID to match
+       map_dirs       - Data product dictionaries for mapping 
+       search_list    - List of directories to search 
+    '''
+ 
+    yrmndy = int(numpy.floor(sounding_id * 1e-8))
+    sdyr = int(yrmndy / 1e4)
+    rmdr = int(yrmndy % 1e4)
+    sdmn = int(rmdr / 1e2)
+    sddy = int(rmdr % 1e2)
+    crdy = datetime.datetime(sdyr,sdmn,sddy) 
+    stdy = datetime.datetime(sdyr,sdmn,sddy) 
+
+    # Some hour info
+    hrtm = (sounding_id * 1e-8) - yrmndy
+
+    # Here the products are in ad hoc directories, instead of by date
+    # Loop through product types and directory list
+
+    dctout = {}
+    # Get the collection
+    kylst = list(map_dirs.keys())
+    for k in range(len(map_dirs.keys() )):
+        crky = kylst[k]
+        sdfd = -1
+        j = 0
+        while ( (sdfd < 0) and (j < len(search_list)) ):
+            drchk = search_list[j] 
+            if (os.path.isdir(drchk)):
+                fllst = os.listdir(drchk)
+                q = 0
+                while ( (sdfd < 0) and (q < len(fllst)) ):
+                    if (".h5" in fllst[q]):
+                        flh5 = '%s/%s' % (drchk,fllst[q])
+                        if ( (map_dirs[crky] == 'L1bSc') or (map_dirs[crky] == 'L2Met') \
+                            or (map_dirs[crky] == 'L2ABP') or (map_dirs[crky] == 'L2IDP') or (map_dirs[crky] == 'L2CPr') ): 
+                            l1bout = oco2_sounding_idx_match(sounding_id,flh5)
+                            if l1bout is not None:
+                                sdfd = l1bout[0]
+                                dctout[crky] = flh5
+                        elif ( (map_dirs[crky] == 'L2Dia') or (map_dirs[crky] == 'L2Std') ): 
+                            l2out = oco2_sounding_idx_match_l2(sounding_id,flh5)
+                            if l2out is not None:
+                                sdfd = l2out
+                                dctout[crky] = flh5
+                    q = q + 1
+            j = j + 1
+
+    return dctout
+
 
 def uq_expt_aggregate_l2(expt_scene_file,expt_agg_file,output_dir):
     '''Generate a OCO-2/3 UQ experiment aggregate output file 
@@ -1077,12 +1137,11 @@ def setup_uq_expt_scene_ref(outfile,scene_config,state_info,state_array,prior_me
 
         random.seed(tmpsd)
 
+        amdstr = state_names[0:2].copy()
         if ( (aqmd == 'nadir') or (aqmd == 'Nadir') ):
-            aqmdout = 'Sample Nadir'
+            amdstr[0] = 'Sample Nadir'
         else:
-            aqmdout = 'Sample Glint'
-        amdstr = numpy.empty((1,),"|O")
-        amdstr[0] = aqmdout
+            amdstr[0] = 'Sample Glint'
 
         # Met/L1b parameters from data frames 
         flflt = numpy.array([-9.999e6],dtype=numpy.float32)
@@ -1117,15 +1176,15 @@ def setup_uq_expt_scene_ref(outfile,scene_config,state_info,state_array,prior_me
         fmt = h5py.File(ref_met)
         # Get aerosol types
         #aertyp = fmt['/Metadata/CompositeAerosolTypes'][:]
-        aertyp = numpy.empty((5,),"|O")
+        aertyp = state_names[0:5].copy() 
         aertyp[0] = "DU"
         aertyp[1] = "SS"
         aertyp[2] = "BC"
         aertyp[3] = "OC"
         aertyp[4] = "SO"
-        dt = h5py.special_dtype(vlen=str)
-        da1 = fout.create_dataset('/Aerosol/TypeNames',(5,),dtype=dt)
-        da1[...] = aertyp
+        #dt = h5py.special_dtype(vlen=str)
+        da1 = fout.create_dataset('/Aerosol/TypeNames',data=aertyp)
+        #da1[...] = aertyp
 
         arindout = numpy.zeros((5,),dtype=numpy.int16) - 1
         for index, row in metfrm.iterrows():
@@ -1153,8 +1212,7 @@ def setup_uq_expt_scene_ref(outfile,scene_config,state_info,state_array,prior_me
         fmt.close()
 
         dt = h5py.special_dtype(vlen=str)
-        da2 = fout.create_dataset('/Metadata/AcquisitionMode',(1,),dtype=dt)
-        da2[...] = amdstr 
+        da2 = fout.create_dataset('/Metadata/AcquisitionMode',data=amdstr[0:1])
         dfl4 = fout.create_dataset('/SoundingGeometry/sounding_id',data=sdg_ids)
 
         # State Vector
@@ -1175,11 +1233,16 @@ def setup_uq_expt_scene_ref(outfile,scene_config,state_info,state_array,prior_me
         tmpvr = state_names[smsqfp]
         grndnm = '/Ground/Albedo' 
         for p in range(nstscn):
-            if ('BRDF' in tmpvr[p]):
+            if ('BRDF' in str(tmpvr[p],'utf-8')):
                 if (pandas.notnull(sbsq['alt_source'].values[p])):
                     tmpvr[p] = sbsq['surr_name'].values[p]
                 else:
                     grndnm = '/Ground/Brdf' 
+            elif ( ('CoxMunk' in str(tmpvr[p],'utf-8')) and ('Scaling' in str(tmpvr[p],'utf-8')) ):
+                if (pandas.notnull(sbsq['alt_source'].values[p])):
+                    tmpvr[p] = sbsq['surr_name'].values[p]
+                else:
+                    grndnm = '/Ground/Coxmunk_Scaled' 
         dfscn = fout.create_dataset('/StateVector/state_vector_names',data=tmpvr)
 
         if (mxcmp is not None):
@@ -1196,7 +1259,7 @@ def setup_uq_expt_scene_ref(outfile,scene_config,state_info,state_array,prior_me
         elif sfctyp == 'ocean':
             prgrps = ['/Gas/CO2','/Gas/H2O_Scaling_factor','/Surface_Pressure','/Temperature/Offset', \
                       '/Aerosol/Merra/Gaussian/Log','/Aerosol/Ice/Gaussian/Log','/Aerosol/Water/Gaussian/Log', \
-                      '/Aerosol/ST/Gaussian/Log','/Ground/Windspeed', '/Ground/Albedo','/Instrument/Dispersion']
+                      '/Aerosol/ST/Gaussian/Log','/Ground/Windspeed', grndnm,'/Instrument/Dispersion']
             prcmps =   [20, 1, 1, 1, 6, 3, 3, 3, 1, 6, 3]
             prngrp = [ 1, 1, 1, 1, 2, 1, 1, 1, 1, 3, 1]
 
@@ -1245,8 +1308,8 @@ def setup_uq_expt_scene_ref(outfile,scene_config,state_info,state_array,prior_me
                     cvout = numpy.zeros((prcmps[q],prcmps[q]),dtype=numpy.float64) + 1.0
                 dfscn = fout.create_dataset(vrnpcv,data=cvout)
             else:
-                dm0 = prngrp[q]
-                dm1 = prcmps[q] / prngrp[q] 
+                dm0 = int(prngrp[q])
+                dm1 = int(prcmps[q] / prngrp[q]) 
                 if prgrps[q] == '/Ground/Brdf':
                     prgrd = fcv['/Ground/Brdf/a_priori'][:,:] 
                     aprtmp = numpy.zeros((dm0,prgrd.shape[1],nreps),dtype=aprfl.dtype)
@@ -1276,8 +1339,8 @@ def setup_uq_expt_scene_ref(outfile,scene_config,state_info,state_array,prior_me
                     if prgrps[q] == '/Aerosol/Merra/Gaussian/Log':
                         cvout = numpy.tile(cvtmp,(2,1,1))
                     elif ( (prgrps[q] == '/Ground/Albedo') and (sfctyp == 'ocean') ):
-                        vrocn = '/Ground/Coxmunk_Albedo/covariance' 
-                        cvout = fcv[vrocn][...]
+                        vrocn = '/Ground/Coxmunk_Albedo_Quadratic/covariance' 
+                        cvout = fcv[vrocn][:,0:2,0:2]
                     else:
                         cvout = cvtmp
                 else:
@@ -1646,12 +1709,11 @@ def setup_uq_expt_scene_ref_bc(outfile,scene_config,state_info,state_array,prior
 
         random.seed(tmpsd)
 
+        amdstr = state_names[0:2].copy()
         if ( (aqmd == 'nadir') or (aqmd == 'Nadir') ):
-            aqmdout = 'Sample Nadir'
+            amdstr[0] = 'Sample Nadir'
         else:
-            aqmdout = 'Sample Glint'
-        amdstr = numpy.empty((1,),"|O")
-        amdstr[0] = aqmdout
+            amdstr[0] = 'Sample Glint'
 
         # Met/L1b parameters from data frames 
         flflt = numpy.array([-9.999e6],dtype=numpy.float32)
@@ -1686,15 +1748,15 @@ def setup_uq_expt_scene_ref_bc(outfile,scene_config,state_info,state_array,prior
         fmt = h5py.File(ref_met)
         # Get aerosol types
         #aertyp = fmt['/Metadata/CompositeAerosolTypes'][:]
-        aertyp = numpy.empty((5,),"|O")
+        aertyp = state_names[0:5].copy() 
         aertyp[0] = "DU"
         aertyp[1] = "SS"
         aertyp[2] = "BC"
         aertyp[3] = "OC"
         aertyp[4] = "SO"
-        dt = h5py.special_dtype(vlen=str)
-        da1 = fout.create_dataset('/Aerosol/TypeNames',(5,),dtype=dt)
-        da1[...] = aertyp
+        #dt = h5py.special_dtype(vlen=str)
+        da1 = fout.create_dataset('/Aerosol/TypeNames',data=aertyp)
+        #da1[...] = aertyp
 
         arindout = numpy.zeros((5,),dtype=numpy.int16) - 1
         for index, row in metfrm.iterrows():
@@ -1722,8 +1784,7 @@ def setup_uq_expt_scene_ref_bc(outfile,scene_config,state_info,state_array,prior
         fmt.close()
 
         dt = h5py.special_dtype(vlen=str)
-        da2 = fout.create_dataset('/Metadata/AcquisitionMode',(1,),dtype=dt)
-        da2[...] = amdstr 
+        da2 = fout.create_dataset('/Metadata/AcquisitionMode',data=amdstr[0:1])
         dfl4 = fout.create_dataset('/SoundingGeometry/sounding_id',data=sdg_ids)
 
         # State Vector
@@ -1742,20 +1803,24 @@ def setup_uq_expt_scene_ref_bc(outfile,scene_config,state_info,state_array,prior
         dfscn = fout.create_dataset('/StateVector/sampled_state_vectors',data=vcout)
 
         tmpvr = state_names[smsqfp] 
-
         grndnm = '/Ground/Albedo' 
         for p in range(nstscn):
-            if ('BRDF' in tmpvr[p]):
+            if ('BRDF' in str(tmpvr[p],'utf-8')):
                 if (pandas.notnull(sbsq['alt_source'].values[p])):
                     tmpvr[p] = sbsq['surr_name'].values[p]
                 else:
-                    grndnm = '/Ground/Brdf' 
+                    grndnm = '/Ground/Brdf'
+            elif ( ('CoxMunk' in str(tmpvr[p],'utf-8')) and ('Scaling' in str(tmpvr[p],'utf-8'))  ): 
+                if (pandas.notnull(sbsq['alt_source'].values[p])):
+                    tmpvr[p] = sbsq['surr_name'].values[p]
+                else:
+                    grndnm = '/Ground/Coxmunk_Scaled'
         if (mxcmp is not None):
             dfscn = fout.create_dataset('/StateVector/mixture_component',data=mxcmp)
         dfscn = fout.create_dataset('/StateVector/state_vector_names',data=tmpvr)
 
         # Prior
-        prstfl = '/groups/algorithm/l2_fp/builds/git_master/build/input/oco/input/l2_oco_static_input.h5'
+        prstfl = '/home/jhobbs/L2FPConfig/l2_oco_static_input.h5'
         if sfctyp == 'land':
             prgrps = ['/Gas/CO2','/Gas/H2O_Scaling_factor','/Surface_Pressure','/Temperature/Offset', \
                       '/Aerosol/Merra/Gaussian/Log','/Aerosol/Ice/Gaussian/Log','/Aerosol/Water/Gaussian/Log', \
@@ -1765,7 +1830,7 @@ def setup_uq_expt_scene_ref_bc(outfile,scene_config,state_info,state_array,prior
         elif sfctyp == 'ocean':
             prgrps = ['/Gas/CO2','/Gas/H2O_Scaling_factor','/Surface_Pressure','/Temperature/Offset', \
                       '/Aerosol/Merra/Gaussian/Log','/Aerosol/Ice/Gaussian/Log','/Aerosol/Water/Gaussian/Log', \
-                      '/Aerosol/ST/Gaussian/Log','/Ground/Windspeed', '/Ground/Albedo','/Instrument/Dispersion']
+                      '/Aerosol/ST/Gaussian/Log','/Ground/Windspeed', grndnm,'/Instrument/Dispersion']
             prcmps =   [20, 1, 1, 1, 6, 3, 3, 3, 1, 6, 3]
             prngrp = [ 1, 1, 1, 1, 2, 1, 1, 1, 1, 3, 1]
 
@@ -1777,11 +1842,6 @@ def setup_uq_expt_scene_ref_bc(outfile,scene_config,state_info,state_array,prior
 
         # Rescaling not needed
         dfscn = fout.create_dataset('/StateVector/a_priori',data=aprfl)
-
-#        print(cvscl[16:20,16:20])
-
-#        prunc = numpy.sqrt(numpy.diagonal(cvscl))
-#        dfscn = fout.create_dataset('/StateVector/a_priori_uncert',data=prunc)
 
         # Assign by group
         sqgrpstr = sbsq['scene_group'].values
@@ -1824,7 +1884,7 @@ def setup_uq_expt_scene_ref_bc(outfile,scene_config,state_info,state_array,prior
                 dfscn = fout.create_dataset(vrnpcv,data=cvout)
             else:
                 dm0 = prngrp[q]
-                dm1 = prcmps[q] / prngrp[q] 
+                dm1 = int(prcmps[q] / prngrp[q]) 
                 if prgrps[q] == '/Ground/Brdf':
                     prgrd = fcv['/Ground/Brdf/a_priori'][:,:] 
                     aprtmp = numpy.zeros((dm0,prgrd.shape[1],nreps),dtype=aprfl.dtype)
