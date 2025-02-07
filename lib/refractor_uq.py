@@ -201,7 +201,7 @@ def setup_uq_l1b(uq_l1b_file,l1b_fields,met_fields,ref_idx,ref_l1b,ref_met,sdg_h
             metdt = fmt[row['variable']][ref_idx[0],ref_idx[1],:]
             metout = numpy.tile(metdt,(nsdg,1,1)) 
             dfl13 = fout.create_dataset(row['variable'],data=metout)
-        if row['dims'] == 4:
+        elif row['dims'] == 4:
             metdt = fmt[row['variable']][ref_idx[0],ref_idx[1],:,:]
             metout = numpy.tile(metdt,(nsdg,1,1,1)) 
             dfl13 = fout.create_dataset(row['variable'],data=metout)
@@ -209,6 +209,23 @@ def setup_uq_l1b(uq_l1b_file,l1b_fields,met_fields,ref_idx,ref_l1b,ref_met,sdg_h
             metdt = fmt[row['variable']][ref_idx[0],ref_idx[1]]
             metout = numpy.tile(metdt,(nsdg,1)) 
             dfl13 = fout.create_dataset(row['variable'],data=metout)
+        # Aerosol metadata
+        dt = h5py.special_dtype(vlen=str)
+        if ( (row['dims'] == 1) and (row['type'] == 'char')):
+            chrdt = fmt[row['variable']][:]
+            chrdcd = numpy.strings.decode(chrdt,encoding='ascii')
+            chrlst = chrdcd.tolist()
+            nchr = chrdt.shape[0]
+            strfmt = 'S%d' % (row['bytes'])
+            print(chrlst)
+            print(strfmt)
+            
+            tid = h5py.h5t.FORTRAN_S1.copy()
+            tid.set_size(row['bytes'])
+            tid.set_strpad(h5py.h5t.STR_NULLTERM)
+            c3dtyp = h5py.Datatype(tid)
+
+            dt1 = fout.create_dataset(row['variable'], shape=(nchr,), dtype=c3dtyp, data=chrlst)
     fmt.close()
 
     fout.close()

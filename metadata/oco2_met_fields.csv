@@ -13,3 +13,4 @@ variable,type,bytes,dims
 /Aerosol/composite_aod_sort_index_met,int,8,3
 /Aerosol/quality_flag_aer_met,int,8,2
 /Aerosol/surface_pressure_aer_met,float,32,2
+/Metadata/CompositeAerosolTypes,char,3,1
