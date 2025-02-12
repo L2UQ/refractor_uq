@@ -85,7 +85,7 @@ def process_field_list(csvfl):
 
     return(df)
 
-def setup_uq_l1b(uq_l1b_file,l1b_fields,met_fields,ref_idx,ref_l1b,ref_met,sdg_hdr,nsdg,save_noise=False,discrep=False):
+def setup_uq_l1b(uq_l1b_file,l1b_fields,met_fields,ref_idx,ref_l1b,ref_met,sdg_hdr,nsdg,save_noise=False,discrep=False, nst=59):
     '''Generate a UQ Level 1B file and fill with reference fields
          uq_l1b_file:  Name of output L1B file
          l1b_fields:   Data frame with level 1B fields
@@ -97,6 +97,7 @@ def setup_uq_l1b(uq_l1b_file,l1b_fields,met_fields,ref_idx,ref_l1b,ref_met,sdg_h
          nsdg:         Number of soundings for UQ
          save_noise:   Option to save noise standard deviations
          discrep:      Option to simulate/save model discrepancy
+         nst:          Dimension of state vector
     '''
 
     # Above arguments could become a structure/dictionary
@@ -155,7 +156,6 @@ def setup_uq_l1b(uq_l1b_file,l1b_fields,met_fields,ref_idx,ref_l1b,ref_met,sdg_h
         dfrd.attrs['missing_value'] = flflt
         dfrd.attrs['_FillValue'] = flflt
         
-    nst = 58
     dtst = numpy.zeros((nsdg,nst),dtype=numpy.float32) + flflt
     dfst = fout.create_dataset('StateVector/true_state_vector',data=dtst)
     dfst.attrs['missing_value'] = flflt
